@@ -1,0 +1,36 @@
+﻿{
+  "Serilog": {
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console",
+          "outputTemplate": "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {NewLine}{Exception}"
+        }
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "service.log",
+          "rollingInterval": "Infinite"
+        }
+      }
+    ]
+  },
+  "serviceConfiguration": {
+    "hubs": [
+      {
+        "name": "PriceHub",
+        "endpoints": [ "http://localhost:8888/hub/price", "http://localhost:8080/hub/price" ]
+      },
+      {
+        "name": "TradeEventHub",
+        "endpoints": [ "http://localhost:8080/hub/trade" ]
+      }
+
+    ],
+    "name": "trades",
+    "version": "1",
+    "key": "AQMZw_z4588oyWcIxdDDLf6agIDKEemwUBR7roSszX23VW471DSBvWfZhcz3hFCDGSqjzCVlHDZsvcNUTalyOm2kYOK5tH6nrpJHy66ELDAie9oFuUNXtBd5igYgc4z5kCqcht2lf1GDeWLsH297S1kgpxNQUDD1qbEnNqzrPQL6pvPEMVFiTlkJ4ix8UlJVuyb4x4G-P077JUlH_eJeFSydtuH5h7-8koPFlQmsNEJtBZDP974D6ZY3Ut4NUUkMBp9UvOT1AiR1_4oCxQ39-zxkdlIQF8d45AFuTbPa-TGKezQFtpezTnfOcEZcdKw80zaiIqEylP9Rd4gLKud4A"
+  }
+}
