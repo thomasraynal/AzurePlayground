@@ -3,21 +3,19 @@ using Dasein.Core.Lite;
 using Dasein.Core.Lite.Shared;
 using FluentValidation.AspNetCore;
 using GraphQL;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using StructureMap;
 using System;
-using System.Reflection;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using Dasein.Core.Lite.Hosting;
+using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace AzurePlayground.Service
 {
@@ -57,29 +55,63 @@ namespace AzurePlayground.Service
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IMemoryCache, ResponseMemoryCache>();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
+            this.AddSwagger(services);
+
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                    .AddIdentityServerAuthentication(options =>
                     {
-                        var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ServiceConfiguration.Key));
-
-                        options.TokenValidationParameters = new TokenValidationParameters()
-                        {
-                            IssuerSigningKey = secret,
-                            ValidIssuer = ServiceConfiguration.Name,
-                            ValidateIssuer = true,
-                            ValidateLifetime = true,
-                            ValidateActor = false,
-                            ValidateAudience = false,
-                        };
-
+                        options.Authority = ServiceConfiguration.Identity;
+                        options.ApiName = ServiceConfiguration.Name;
+                        options.ApiSecret = ServiceConfiguration.Key;
+                        options.EnableCaching = true;
+                        options.CacheDuration = TimeSpan.FromMinutes(10);
                         options.Events = new JwtBearerEvents()
                         {
-                            OnAuthenticationFailed = context =>
+                            OnTokenValidated = tvContext =>
                             {
-                                throw new UnauthorizedUserException($"Failed to authenticate user [{context.Exception.Message}]");
+                                return Task.CompletedTask;
                             }
+
                         };
+
                     });
+
+            //  services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+
+            //.AddJwtBearer(options =>
+            //{
+            //    var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ServiceConfiguration.Key));
+
+            //    options.TokenValidationParameters = new TokenValidationParameters()
+            //    {
+            //        IssuerSigningKey = secret,
+            //        ValidIssuer = ServiceConfiguration.Name,
+            //        ValidateIssuer = true,
+            //        ValidateLifetime = true,
+            //        ValidateActor = false,
+            //        ValidateAudience = false,
+            //    };
+
+            //    options.Events = new JwtBearerEvents()
+            //    {
+            //        OnAuthenticationFailed = context =>
+            //        {
+            //            throw new UnauthorizedUserException($"Failed to authenticate user [{context.Exception.Message}]");
+            //        }
+            //    };
+            //})
+            //.AddOpenIdConnect("oidc",options =>
+            //{
+            //    options.Authority = Configuration["serviceConfiguration.identity"];
+            //    options.RequireHttpsMetadata = false;
+            //    options.ClientId = "AzurePlaygroundUserClient";
+            //    options.ClientSecret = Configuration["serviceConfiguration.key"].Sha256();
+            //    //options.ResponseType = "code id_token";
+            //    //options.Scope.Add("apiApp");
+            //    //options.Scope.Add("offline_access");
+            //    options.GetClaimsFromUserInfoEndpoint = true;
+            //    options.SaveTokens = true;
+            //});
 
             services.AddAuthorization(options =>
             {
@@ -124,6 +156,8 @@ namespace AzurePlayground.Service
 
         protected override void ConfigureInternal(IApplicationBuilder app)
         {
+            this.UseSwagger(app);
+
             app.UseAuthentication();
 
             app.UseResponseCaching();

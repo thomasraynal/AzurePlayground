@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AzurePlayground.Service
+namespace AzurePlayground.Authentication
 {
-    public class TradeServiceConfiguration : ServiceHubConfigurationBase
+    public class AuthenticationServiceConfiguration : ServiceConfigurationBase
     {
         public override string Name { get; set; }
         public override int Version { get; set; }

@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dasein.Core.Lite.Shared", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Trade.Repository", "AzurePlayground.Trade.Repository\AzurePlayground.Trade.Repository.csproj", "{5FC7544F-EB21-4960-980C-1A84C6C2D293}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Trade.Service", "AzurePlayground.Trade.Service\AzurePlayground.Trade.Service.csproj", "{9F3501B4-4C9C-4DA6-A2F8-DACA52F4C56E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Trade.Service", "AzurePlayground.Trade.Service\AzurePlayground.Trade.Service.csproj", "{9F3501B4-4C9C-4DA6-A2F8-DACA52F4C56E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Authentication", "AzurePlayground.Authentication\AzurePlayground.Authentication.csproj", "{CA3026F0-AB1D-437D-B1F3-C384EBDA1392}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{9F3501B4-4C9C-4DA6-A2F8-DACA52F4C56E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F3501B4-4C9C-4DA6-A2F8-DACA52F4C56E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F3501B4-4C9C-4DA6-A2F8-DACA52F4C56E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA3026F0-AB1D-437D-B1F3-C384EBDA1392}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA3026F0-AB1D-437D-B1F3-C384EBDA1392}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA3026F0-AB1D-437D-B1F3-C384EBDA1392}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA3026F0-AB1D-437D-B1F3-C384EBDA1392}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
