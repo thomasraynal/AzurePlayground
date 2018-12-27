@@ -10,8 +10,8 @@ namespace AzurePlayground.Service
 {
     public class TradeController : ServiceControllerBase<ITradeService>
     {
-
-       // [Authorize(TradeServiceReferential.TraderUserPolicy)]
+        [Authorize]
+        //[Authorize(TradeServiceReferential.TraderUserPolicy)]
         [HttpPut]
         public async Task<ActionResult<TradeCreationResult>> CreateTrade([FromBody] TradeCreationRequest request)
         {
@@ -21,7 +21,9 @@ namespace AzurePlayground.Service
             return CreatedAtAction(nameof(GetTradeById), new { tradeId = tradeResult.TradeId }, tradeResult);
         }
 
-       // [Authorize(TradeServiceReferential.TraderUserPolicy)]
+
+        [Authorize]
+        // [Authorize(TradeServiceReferential.TraderUserPolicy)]
         [HttpGet]
         public async Task<IEnumerable<ITrade>> GetAllTrades()
         {

@@ -21,11 +21,11 @@ namespace AzurePlayground.Service
         {
             Task.Delay(500).ContinueWith((_) =>
             {
-                _tradeEventService = SignalRServiceBuilder<TradeEvent, TradeEventRequest>
-                                  .Create()
-                                  .Build(new TradeEventRequest((p) => true));
+                //_tradeEventService = SignalRServiceBuilder<TradeEvent, TradeEventRequest>
+                //                  .Create()
+                //                  .Build(new TradeEventRequest((p) => true));
 
-                _tradeEventService.Connect(Scheduler.Default, 0);
+                //_tradeEventService.Connect(Scheduler.Default, 0);
             });
 
         }
