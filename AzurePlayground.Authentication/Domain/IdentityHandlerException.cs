@@ -1,56 +1,49 @@
-﻿using Dasein.Core.Lite.Shared;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Runtime.Serialization;
-using System.Text;
+﻿//using Dasein.Core.Lite.Shared;
+//using System;
+//using System.Collections.Generic;
+//using System.Net;
+//using System.Runtime.Serialization;
+//using System.Text;
 
-namespace AzurePlayground.Authentication
-{
-    public class IdentityHandlerException : Exception, IHasHttpServiceError
-    {
-        private HttpServiceError _httpServiceError;
+//namespace AzurePlayground.Authentication
+//{
+//    public class IdentityHandlerException : Exception, IHasHttpServiceError
+//    {
+//        public IdentityHandlerException()
+//        {
+//            CreateModel();
+//        }
 
-        public IdentityHandlerException()
-        {
-            CreateModel();
-        }
+//        public IdentityHandlerException(string message) : base(message)
+//        {
+//            CreateModel();
+//        }
 
-        public IdentityHandlerException(string message) : base(message)
-        {
-            CreateModel();
-        }
+//        public IdentityHandlerException(string message, Exception innerException) : base(message, innerException)
+//        {
+//            CreateModel();
+//        }
 
-        public IdentityHandlerException(string message, Exception innerException) : base(message, innerException)
-        {
-            CreateModel();
-        }
+//        protected IdentityHandlerException(SerializationInfo info, StreamingContext context) : base(info, context)
+//        {
+//            CreateModel();
+//        }
 
-        protected IdentityHandlerException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            CreateModel();
-        }
+//        private void CreateModel()
+//        {
+//            var statusCode = this.Message.Contains("unauthorized") ? HttpStatusCode.Unauthorized : HttpStatusCode.BadRequest;
 
-        private void CreateModel()
-        {
-            var statusCode = this.Message.Contains("unauthorized") ? HttpStatusCode.Unauthorized : HttpStatusCode.BadRequest;
-            _httpServiceError = new HttpServiceError()
-            {
-                HttpStatusCode = statusCode,
-                ServiceErrorModel = new ServiceErrorModel()
-                {
-                    Reason = statusCode.ToString(),
-                    Details = Message
-                }
-            };
-        }
+//            HttpServiceError = new HttpServiceError()
+//            {
+//                HttpStatusCode = statusCode,
+//                ServiceErrorModel = new ServiceErrorModel()
+//                {
+//                    Reason = statusCode.ToString(),
+//                    Details = Message
+//                }
+//            };
+//        }
 
-        public HttpServiceError HttpServiceError
-        {
-            get
-            {
-                return _httpServiceError;
-            }
-        }
-    }
-}
+//        public HttpServiceError HttpServiceError { get; private set; }
+//    }
+//}

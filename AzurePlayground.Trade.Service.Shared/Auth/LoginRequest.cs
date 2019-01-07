@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace AzurePlayground.Service.Shared
@@ -16,7 +17,11 @@ namespace AzurePlayground.Service.Shared
 
     public class LoginRequest
     {
+        [Required]
         public String Username { get; set; }
+        [Required]
         public String Password { get; set; }
+        public bool RememberLogin { get; set; }
+        public string ReturnUrl { get; set; }
     }
 }

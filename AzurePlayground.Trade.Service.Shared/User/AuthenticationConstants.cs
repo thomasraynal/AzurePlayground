@@ -29,11 +29,23 @@ namespace AzurePlayground.Service.Shared
 
         public static class Auth
         {
-            public const string Client = "trade-service-auth-client";
+            public const string ClientReferenceToken = "trade-service-auth-client-reference-token";
+            public const string ClientOpenId = "trade-service-auth-client-openid";
+            public const string ClientOpenIdHybrid = "trade-service-auth-client-hybrid";
+            public const string ClientOpenIdHybrid2 = "trade-service-auth-client-hybrid2";
+
         }
 
         public static class Desk
         {
+            public static IdentityResource DeskIdentityResource { get; private set; }
+            public static String DeskNameClaim = "desk_name";
+
+            static Desk()
+            {
+                DeskIdentityResource = new IdentityResource() { Name = "desk", DisplayName = "Trader Desk Info", UserClaims = { DeskNameClaim } };
+            }
+
             public const string DeskClaimType = "Desk";
             public const string DeskEquityClaim = "Desk-EQ";
             public const string DeskFixedIncomeClaim = "Desk-FIX";

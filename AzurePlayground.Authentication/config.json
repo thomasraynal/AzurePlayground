@@ -1,4 +1,7 @@
 ﻿{
+  "mongoConnection": "mongodb://127.0.0.1:27017",
+  "MongoDatabaseName": "playground",
+
   "Serilog": {
     "WriteTo": [
       {
@@ -15,5 +18,6 @@
     "identity": "http://localhost:5001",
     "version": "1",
     "key": "AQMZwz4588oyWcIxdDDLf"
+
   }
 }
