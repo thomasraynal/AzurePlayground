@@ -5,10 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="1.1.0" />
     <PackageReference Include="IdentityServer4" Version="2.3.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AzurePlayground.Persistence.Mongo\AzurePlayground.Persistence.Mongo.csproj" />
     <ProjectReference Include="..\AzurePlayground.Trade.Service.Shared\AzurePlayground.Trade.Service.Shared.csproj" />
   </ItemGroup>
 

@@ -50,7 +50,7 @@ namespace AzurePlayground.Authentication.Tests
                     {
                         options.Authority = "http://localhost:5001";
                         options.RequireHttpsMetadata = false;
-                        options.Scope.Add("office");
+                        options.Scope.Add(AzurePlaygroundConstants.Desk.DeskScope);
                         options.UseTokenLifetime = true;
                         options.GetClaimsFromUserInfoEndpoint = true;
                         //options.Scope.Add(IdentityServerConstants.StandardScopes.Profile);

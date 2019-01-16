@@ -8,14 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="1.1.0" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AzurePlayground.Authentication.Shared\AzurePlayground.Authentication.Shared.csproj" />
     <ProjectReference Include="..\AzurePlayground.Persistence.Mongo\AzurePlayground.Persistence.Mongo.csproj" />
+    <ProjectReference Include="..\AzurePlayground.Persistence\AzurePlayground.Persistence.csproj" />
     <ProjectReference Include="..\AzurePlayground.Trade.Service.Shared\AzurePlayground.Trade.Service.Shared.csproj" />
     <ProjectReference Include="..\Modules\Dasein.Core.Lite\Dasein.Core.Lite.Shared\Dasein.Core.Lite.Shared.csproj" />
     <ProjectReference Include="..\Modules\Dasein.Core.Lite\Dasein.Core.Lite\Dasein.Core.Lite.csproj" />

@@ -1,4 +1,7 @@
-﻿using AzurePlayground.Service.Shared;
+﻿using AspNetCore.Identity.MongoDbCore.Models;
+using AzurePlayground.Persistence;
+using AzurePlayground.Persistence.Mongo;
+using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite.Shared;
 using IdentityModel;
 using IdentityServer4;
@@ -12,33 +15,33 @@ namespace AzurePlayground.Authentication
 {
     public static class DbSeed
     {
-        public static IEnumerable<TradeServiceUser> GetSeedUsers()
+        public static IEnumerable<PasswordHolder<ApplicationUser>> GetSeedUsers()
         {
-            return new List<TradeServiceUser>()
-        {
-            new TradeServiceUser{SubjectId = "818727", Username = "alice.smith", Password = "alice",
-                Claims =
-                {
-                    new Claim(JwtClaimTypes.Name, "Alice Smith"),
-                    new Claim(JwtClaimTypes.GivenName, "Alice"),
-                    new Claim(JwtClaimTypes.FamilyName, "Smith"),
-                    new Claim(JwtClaimTypes.Email, "AliceSmith@bfi.com"),
-                   new Claim(AzurePlaygroundConstants.Desk.DeskClaimType, AzurePlaygroundConstants.Desk.DeskEquityClaim),
-
-
-                }
-            },
-            new TradeServiceUser{SubjectId = "88421113", Username = "bob.woodworth", Password = "bob",
-                Claims =
-                {
-                    new Claim(JwtClaimTypes.Name, "Bob Woodworth"),
-                    new Claim(JwtClaimTypes.GivenName, "Bob"),
-                    new Claim(JwtClaimTypes.FamilyName, "Woodworth"),
-                    new Claim(JwtClaimTypes.Email, "BobWoodworth@bfi.com"),
-                   new Claim(AzurePlaygroundConstants.Desk.DeskClaimType, AzurePlaygroundConstants.Desk.DeskEquityClaim)
-                }
-            }
-        };
+            return new List<PasswordHolder<ApplicationUser>>()
+            {
+                new PasswordHolder<ApplicationUser>(new ApplicationUser("alice.smith"){
+                    Claims =
+                    {
+                        new MongoClaim(){Type =JwtClaimTypes.Subject, Value =Guid.NewGuid().ToString() },
+                        new MongoClaim(){Type =JwtClaimTypes.Email, Value = "alice.smith@bfi.com" },
+                        new MongoClaim(){Type =JwtClaimTypes.Name, Value = "Alice Smith" },
+                        new MongoClaim(){Type =JwtClaimTypes.GivenName, Value = "Alice" },
+                        new MongoClaim(){Type =JwtClaimTypes.FamilyName, Value = "Smith" },
+                        new MongoClaim(){Type =AzurePlaygroundConstants.Desk.DeskClaimType, Value =  AzurePlaygroundConstants.Desk.DeskEquityClaim}
+                    }
+                }, "alice"),
+                 new PasswordHolder<ApplicationUser>(new ApplicationUser("bob.woodworth"){
+                    Claims =
+                    {
+                        new MongoClaim(){Type =JwtClaimTypes.Subject, Value =Guid.NewGuid().ToString() },
+                         new MongoClaim(){Type =JwtClaimTypes.Email, Value = "bob.woodworth@bfi.com" },
+                        new MongoClaim(){Type =JwtClaimTypes.Name, Value = "Bob Woodworth" },
+                        new MongoClaim(){Type =JwtClaimTypes.GivenName, Value = "Bob" },
+                        new MongoClaim(){Type =JwtClaimTypes.FamilyName, Value = "Woodworth" },
+                        new MongoClaim(){Type =AzurePlaygroundConstants.Desk.DeskClaimType, Value =  AzurePlaygroundConstants.Desk.DeskFixedIncomeClaim}
+                    }
+                }, "bob"),
+            };
         }
 
         public static IEnumerable<ApiResource> GetSeedApiResources(IServiceConfiguration configuration)
@@ -90,12 +93,12 @@ namespace AzurePlayground.Authentication
                     ClientName =  AzurePlaygroundConstants.Auth.ClientOpenId,
                     AllowedGrantTypes = GrantTypes.Implicit,
                     RequireConsent = false,
-                    AccessTokenLifetime =5,
-                    AuthorizationCodeLifetime =5,
-                    IdentityTokenLifetime = 5,
+                    //AccessTokenLifetime =60*60*24,
+                    //AuthorizationCodeLifetime =5,
+                    //IdentityTokenLifetime = 5,
                     RedirectUris = { "http://localhost:5002/signin-oidc" },
                     PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
-                    AllowedScopes = { AzurePlaygroundConstants.Api.Name,IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile, "office"},
+                    AllowedScopes = { AzurePlaygroundConstants.Api.Name,IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile, AzurePlaygroundConstants.Desk.DeskScope},
                 },
                  //oidc client hybrid
                 new Client
@@ -109,7 +112,7 @@ namespace AzurePlayground.Authentication
                     RedirectUris = { "http://localhost:5002/signin-oidc" },
                     PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
                     FrontChannelLogoutUri =  "http://localhost:5002/signout-callback-oidc",
-                    AllowedScopes = { AzurePlaygroundConstants.Api.Name,IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile, "office"},
+                    AllowedScopes = { AzurePlaygroundConstants.Api.Name,IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile, AzurePlaygroundConstants.Desk.DeskScope},
                 },
                 //pkce client
                  new Client
@@ -122,7 +125,7 @@ namespace AzurePlayground.Authentication
                     RequireConsent = false,
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
-                    AllowedScopes = {  AzurePlaygroundConstants.Api.Name,IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile, "office" },
+                    AllowedScopes = {  AzurePlaygroundConstants.Api.Name,IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile,AzurePlaygroundConstants.Desk.DeskScope },
                     AllowOfflineAccess = true,
                     RefreshTokenUsage = TokenUsage.ReUse
                 }

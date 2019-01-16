@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="1.1.0" />
     <PackageReference Include="IdentityServer4" Version="2.3.2" />
     <PackageReference Include="MongoDB.Driver" Version="2.7.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AzurePlayground.Authentication.Shared\AzurePlayground.Authentication.Shared.csproj" />
     <ProjectReference Include="..\AzurePlayground.Persistence\AzurePlayground.Persistence.csproj" />
   </ItemGroup>
 

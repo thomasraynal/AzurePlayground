@@ -39,14 +39,15 @@ namespace AzurePlayground.Service.Shared
         public static class Desk
         {
             public static IdentityResource DeskIdentityResource { get; private set; }
-            public static String DeskNameClaim = "desk_name";
+            public static String DeskClaimType = "desk_name";
+            public static String DeskScope = "desk";
 
             static Desk()
             {
-                DeskIdentityResource = new IdentityResource() { Name = "desk", DisplayName = "Trader Desk Info", UserClaims = { DeskNameClaim } };
+                DeskIdentityResource = new IdentityResource() { Name = DeskScope, DisplayName = "Trader Desk Info", UserClaims = { DeskClaimType } };
             }
 
-            public const string DeskClaimType = "Desk";
+      
             public const string DeskEquityClaim = "Desk-EQ";
             public const string DeskFixedIncomeClaim = "Desk-FIX";
         }

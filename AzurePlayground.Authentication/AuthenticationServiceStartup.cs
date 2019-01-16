@@ -6,13 +6,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Dasein.Core.Lite.Hosting;
 using FluentValidation.AspNetCore;
-using System.IdentityModel.Tokens.Jwt;
-using IdentityServer4.Validation;
-using IdentityServer4.Stores;
-using IdentityServer4;
 using System;
-using AzurePlayground.Persistence.Mongo;
+using Microsoft.AspNetCore.Identity;
+using MongoDbGenericRepository;
+using System.Linq;
 using AzurePlayground.Persistence;
+using AzurePlayground.Persistence.Mongo;
 
 namespace AzurePlayground.Authentication
 {
@@ -27,6 +26,26 @@ namespace AzurePlayground.Authentication
             services.AddSerilog(Configuration);
             services.AddSingleton<ICacheStrategy<MethodCacheObject>, DefaultCacheStrategy<MethodCacheObject>>();
 
+            services.AddAuthentication("authCookie")
+                    .AddCookie("authCookie", options =>
+                    {
+                        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                    });
+
+            var mongoDbContext = new MongoDbContext(ServiceConfiguration.MongoConnectionString, ServiceConfiguration.MongoDatabase);
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 1;
+                options.Password.RequiredUniqueChars = 1;
+            })
+                .AddMongoDbStores<IMongoDbContext>(mongoDbContext)
+                .AddDefaultTokenProviders();
+
             services.AddIdentityServer(options =>
             {
                 options.Events.RaiseSuccessEvents = true;
@@ -34,33 +53,12 @@ namespace AzurePlayground.Authentication
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;
             })
-                .AddMongoRepository()
+                .AddMongoStores()
                 .AddSigningCredential(IdentityServerBuilderExtensionsCrypto.CreateRsaSecurityKey());
-
-
-            services.AddAuthentication("ExpirationCookie")
-                    .AddCookie("ExpirationCookie", options =>
-                    {
-                        options.ExpireTimeSpan = TimeSpan.FromSeconds(10);
-                    });
-
-            var mongoConfig = Configuration.Get<MongoConfigurationOptions>();
-            services.AddIdentityMongoDbProvider<MongoUser>(options =>
-            {
-                options.MongoConnection = mongoConfig.MongoConnection;
-                options.MongoDatabaseName = mongoConfig.MongoDatabaseName;
-                options.RolesCollection = mongoConfig.RolesCollection;
-                options.UsersCollection = mongoConfig.UsersCollection;
-            });
-
-            services.AddMongoDbConfiguration(Configuration);
-
-            //services.AddSingleton<TestUserService>();
-            services.AddTransient<IResourceOwnerPasswordValidator, TestResourceOwnerPasswordValidator>();
-  
-            var jsonSettings = new ServiceJsonSerializerSettings();
-
+            
             this.AddSwagger(services);
+
+            var jsonSettings = new ServiceJsonSerializerSettings();
 
             services.AddMvc()
                 .RegisterJsonSettings(jsonSettings)
@@ -70,11 +68,14 @@ namespace AzurePlayground.Authentication
 
         protected override void ConfigureInternal(IApplicationBuilder app)
         {
-            app.UseMongoDbForIdentityServer();
-
             app.UseIdentityServer();
-            
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            app.SeedIdentityServer(
+              clients: DbSeed.GetSeedClients(ServiceConfiguration), 
+              apiRessources : DbSeed.GetSeedApiResources(ServiceConfiguration), 
+              identityRessources : DbSeed.GetSeedIdentityRessources());
+
+            app.SeedApplicationUser(DbSeed.GetSeedUsers());
 
             if (HostingEnvironment.IsDevelopment())
             {
@@ -88,6 +89,7 @@ namespace AzurePlayground.Authentication
             app.UseStaticFiles();
 
             this.UseSwagger(app);
+
             app.UseMvcWithDefaultRoute();
         }
     }

@@ -14,6 +14,7 @@ namespace AzurePlayground.Persistence
         void Delete<T>(Expression<Func<T, bool>> expression) where T : class, new();
         void Add<T>(T item) where T : class, new();
         void Add<T>(IEnumerable<T> items) where T : class, new();
-        bool CollectionExists<T>() where T : class, new();
+        void ClearTable<T>();
+
     }
 }

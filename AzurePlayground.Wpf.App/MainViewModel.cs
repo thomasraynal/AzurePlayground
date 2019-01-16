@@ -23,7 +23,7 @@ namespace AzurePlayground.Wpf.App
                 //redirect to identity server
                 Authority = "http://localhost:5001",
                 ClientId = "native.code",
-                Scope = "openid profile office",
+                Scope = "openid profile desk",
                 //redirect back to app if auth success
                 RedirectUri = "http://127.0.0.1/sample-wpf-app",
                 PostLogoutRedirectUri = "http://127.0.0.1/sample-wpf-app",

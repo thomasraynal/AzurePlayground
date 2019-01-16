@@ -25,11 +25,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Authenticat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Authentication.Tests2", "AzurePlayground.Authentication.Tests2\AzurePlayground.Authentication.Tests2.csproj", "{B4491C07-A5A1-48D0-8B42-B0B20C10914D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Authentication.Shared", "AzurePlayground.Authentication.Shared\AzurePlayground.Authentication.Shared.csproj", "{71E39650-266F-4A42-965D-DCBE11470094}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Authentication.Shared", "AzurePlayground.Authentication.Shared\AzurePlayground.Authentication.Shared.csproj", "{71E39650-266F-4A42-965D-DCBE11470094}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Persistence.Mongo", "AzurePlayground.Persistence.Mongo\AzurePlayground.Persistence.Mongo.csproj", "{444A34ED-A5D6-4D1E-98EC-86F267D21351}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Persistence", "AzurePlayground.Persistence\AzurePlayground.Persistence.csproj", "{2F486381-7693-42D8-9B74-DBF80B9D3B45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Persistence", "AzurePlayground.Persistence\AzurePlayground.Persistence.csproj", "{2F486381-7693-42D8-9B74-DBF80B9D3B45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Persistence.Mongo", "AzurePlayground.Persistence.Mongo\AzurePlayground.Persistence.Mongo.csproj", "{468ED66A-A89A-498B-B339-56CA5CF8FC76}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,14 +85,14 @@ Global
 		{71E39650-266F-4A42-965D-DCBE11470094}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71E39650-266F-4A42-965D-DCBE11470094}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71E39650-266F-4A42-965D-DCBE11470094}.Release|Any CPU.Build.0 = Release|Any CPU
-		{444A34ED-A5D6-4D1E-98EC-86F267D21351}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{444A34ED-A5D6-4D1E-98EC-86F267D21351}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{444A34ED-A5D6-4D1E-98EC-86F267D21351}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{444A34ED-A5D6-4D1E-98EC-86F267D21351}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2F486381-7693-42D8-9B74-DBF80B9D3B45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2F486381-7693-42D8-9B74-DBF80B9D3B45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F486381-7693-42D8-9B74-DBF80B9D3B45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F486381-7693-42D8-9B74-DBF80B9D3B45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{468ED66A-A89A-498B-B339-56CA5CF8FC76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{468ED66A-A89A-498B-B339-56CA5CF8FC76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{468ED66A-A89A-498B-B339-56CA5CF8FC76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{468ED66A-A89A-498B-B339-56CA5CF8FC76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
