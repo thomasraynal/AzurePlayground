@@ -27,6 +27,7 @@ namespace AzurePlayground.Authentication
                         new MongoClaim(){Type =JwtClaimTypes.Name, Value = "Alice Smith" },
                         new MongoClaim(){Type =JwtClaimTypes.GivenName, Value = "Alice" },
                         new MongoClaim(){Type =JwtClaimTypes.FamilyName, Value = "Smith" },
+                        new MongoClaim(){Type =ClaimTypes.Role, Value = AzurePlaygroundConstants.Auth.AdminRoleClaimValue},
                         new MongoClaim(){Type =AzurePlaygroundConstants.Desk.DeskClaimType, Value =  AzurePlaygroundConstants.Desk.DeskEquityClaim}
                     }
                 }, "alice"),
@@ -50,7 +51,7 @@ namespace AzurePlayground.Authentication
             {
                 new ApiResource(AzurePlaygroundConstants.Api.Name, AzurePlaygroundConstants.Api.Description)
                 {
-                    ApiSecrets = { new Secret(configuration.Key.Sha256()) }
+                    ApiSecrets = { new Secret(configuration.Key.Sha256()) }                    
                 }
             };
         }
@@ -74,18 +75,17 @@ namespace AzurePlayground.Authentication
                 {
                     ClientId = AzurePlaygroundConstants.Auth.ClientReferenceToken,
                     ClientSecrets = {
-
-                        new Secret{
+                        new Secret {
                             Type = IdentityServerConstants.SecretTypes.SharedSecret,
                             Value = configuration.Key.Sha256()
                         },
-                        },
-
+                    },
                     AccessTokenType = AccessTokenType.Reference,
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                     AllowedScopes = { AzurePlaygroundConstants.Api.Name, IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile},
-                    AccessTokenLifetime = 30
+                    //AccessTokenLifetime = 30
                 },
+
                 //oidc client
                 new Client
                 {
@@ -93,7 +93,8 @@ namespace AzurePlayground.Authentication
                     ClientName =  AzurePlaygroundConstants.Auth.ClientOpenId,
                     AllowedGrantTypes = GrantTypes.Implicit,
                     RequireConsent = false,
-                    //AccessTokenLifetime =60*60*24,
+                    AccessTokenType = AccessTokenType.Reference,
+                    //AccessTokenLifetime =5,
                     //AuthorizationCodeLifetime =5,
                     //IdentityTokenLifetime = 5,
                     RedirectUris = { "http://localhost:5002/signin-oidc" },
@@ -105,9 +106,11 @@ namespace AzurePlayground.Authentication
                 {
                     ClientId =  AzurePlaygroundConstants.Auth.ClientOpenIdHybrid,
                     ClientName =  AzurePlaygroundConstants.Auth.ClientOpenIdHybrid,
+                          AccessTokenType = AccessTokenType.Reference,
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     AllowOfflineAccess = true,
-                    ClientSecrets = { new Secret("secret".Sha256()) },
+                    //AccessTokenLifetime =30,
+                    ClientSecrets = { new Secret(configuration.Key.Sha256()) },
                     RequireConsent = false,
                     RedirectUris = { "http://localhost:5002/signin-oidc" },
                     PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },

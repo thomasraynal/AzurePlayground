@@ -12,6 +12,9 @@ using MongoDbGenericRepository;
 using System.Linq;
 using AzurePlayground.Persistence;
 using AzurePlayground.Persistence.Mongo;
+using IdentityServer4.Stores;
+using AzurePlayground.Service.Shared;
+using IdentityModel;
 
 namespace AzurePlayground.Authentication
 {
@@ -25,12 +28,6 @@ namespace AzurePlayground.Authentication
         {
             services.AddSerilog(Configuration);
             services.AddSingleton<ICacheStrategy<MethodCacheObject>, DefaultCacheStrategy<MethodCacheObject>>();
-
-            services.AddAuthentication("authCookie")
-                    .AddCookie("authCookie", options =>
-                    {
-                        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-                    });
 
             var mongoDbContext = new MongoDbContext(ServiceConfiguration.MongoConnectionString, ServiceConfiguration.MongoDatabase);
 
@@ -54,8 +51,16 @@ namespace AzurePlayground.Authentication
                 options.Events.RaiseInformationEvents = true;
             })
                 .AddMongoStores()
+                .AddProfileService<AllAvailableClaimsProfileService>()
                 .AddSigningCredential(IdentityServerBuilderExtensionsCrypto.CreateRsaSecurityKey());
-            
+
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(AzurePlaygroundConstants.Auth.AdminRolePolicy, policy => policy.RequireRole(AzurePlaygroundConstants.Auth.AdminRoleClaimValue));
+            });
+
+
             this.AddSwagger(services);
 
             var jsonSettings = new ServiceJsonSerializerSettings();
@@ -85,6 +90,8 @@ namespace AzurePlayground.Authentication
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            app.UseAuthentication();
 
             app.UseStaticFiles();
 

@@ -14,8 +14,10 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Dasein.Core.Lite.Hosting;
-using IdentityServer4.AccessTokenValidation;
+using System.IdentityModel.Tokens.Jwt;
+using IdentityServer4;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using IdentityServer4.AccessTokenValidation;
 
 namespace AzurePlayground.Service
 {
@@ -57,61 +59,7 @@ namespace AzurePlayground.Service
 
             this.AddSwagger(services);
 
-            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                    .AddIdentityServerAuthentication(options =>
-                    {
-                        options.Authority = ServiceConfiguration.Identity;
-                        options.ApiName = ServiceConfiguration.Name;
-                        options.ApiSecret = ServiceConfiguration.Key;
-                        options.EnableCaching = true;
-                        options.CacheDuration = TimeSpan.FromMinutes(10);
-                        options.Events = new JwtBearerEvents()
-                        {
-                            OnTokenValidated = tvContext =>
-                            {
-                                return Task.CompletedTask;
-                            }
 
-                        };
-
-                    });
-
-            //  services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-
-            //.AddJwtBearer(options =>
-            //{
-            //    var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ServiceConfiguration.Key));
-
-            //    options.TokenValidationParameters = new TokenValidationParameters()
-            //    {
-            //        IssuerSigningKey = secret,
-            //        ValidIssuer = ServiceConfiguration.Name,
-            //        ValidateIssuer = true,
-            //        ValidateLifetime = true,
-            //        ValidateActor = false,
-            //        ValidateAudience = false,
-            //    };
-
-            //    options.Events = new JwtBearerEvents()
-            //    {
-            //        OnAuthenticationFailed = context =>
-            //        {
-            //            throw new UnauthorizedUserException($"Failed to authenticate user [{context.Exception.Message}]");
-            //        }
-            //    };
-            //})
-            //.AddOpenIdConnect("oidc",options =>
-            //{
-            //    options.Authority = Configuration["serviceConfiguration.identity"];
-            //    options.RequireHttpsMetadata = false;
-            //    options.ClientId = "AzurePlaygroundUserClient";
-            //    options.ClientSecret = Configuration["serviceConfiguration.key"].Sha256();
-            //    //options.ResponseType = "code id_token";
-            //    //options.Scope.Add("apiApp");
-            //    //options.Scope.Add("offline_access");
-            //    options.GetClaimsFromUserInfoEndpoint = true;
-            //    options.SaveTokens = true;
-            //});
 
             services.AddAuthorization(options =>
             {
@@ -139,6 +87,49 @@ namespace AzurePlayground.Service
                     })
                     .RegisterJsonSettings(jsonSettings)
                     .AddFluentValidation(config => config.RegisterValidatorsFromAssemblies((assembly) => assembly.FullName.Contains("AzurePlayground.Service")));
+
+
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                    .AddIdentityServerAuthentication(options =>
+                     {
+                         options.RequireHttpsMetadata = false;
+                         options.Authority = ServiceConfiguration.Identity;
+                         options.ApiName = AzurePlaygroundConstants.Api.Name;
+                         options.ApiSecret = ServiceConfiguration.Key;
+                     });
+
+            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            //services.AddAuthentication(options =>
+            //{
+            //    options.DefaultScheme = "Cookies";
+            //    options.DefaultChallengeScheme = "oidc";
+
+            //})
+            //    .AddCookie("Cookies")
+            //    .AddOpenIdConnect("oidc", options =>
+            //    {
+            //        options.Authority = ServiceConfiguration.Identity;
+            //        options.RequireHttpsMetadata = false;
+            //        options.Scope.Add(AzurePlaygroundConstants.Desk.DeskScope);
+            //        options.Scope.Add(IdentityServerConstants.StandardScopes.Profile);
+            //        options.ClientSecret = ServiceConfiguration.Key;
+            //        options.ResponseType = "code id_token";
+            //        options.GetClaimsFromUserInfoEndpoint = true;
+            //        //"office_number", "office_number");
+            //        //options.Scope.Add(IdentityServerConstants.StandardScopes.Profile);
+            //        //options.Scope.Add(IdentityServerConstants.StandardScopes.OpenId);
+            //        //options.Scope.Add(AzurePlaygroundConstants.Api.Name);
+            //        options.ClientId = AzurePlaygroundConstants.Auth.ClientOpenIdHybrid;
+            //        options.SaveTokens = true;
+
+            //        //options.Authority = ServiceConfiguration.Identity;
+            //        //options.RequireHttpsMetadata = false;
+            //        //options.Scope.Add(AzurePlaygroundConstants.Desk.DeskScope);
+            //        //options.GetClaimsFromUserInfoEndpoint = true;
+            //        //options.ClientId = AzurePlaygroundConstants.Auth.ClientOpenId;
+            //        //options.SaveTokens = true;
+            //    });
         }
 
     protected override void OnApplicationStart()

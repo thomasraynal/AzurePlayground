@@ -1,6 +1,6 @@
 using System;
 
-namespace AzurePlayground.Authentication.Tests.Models
+namespace AzurePlayground.Web.App.Models
 {
     public class ErrorViewModel
     {

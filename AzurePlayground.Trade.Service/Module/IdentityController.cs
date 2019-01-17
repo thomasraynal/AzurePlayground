@@ -1,123 +1,105 @@
-﻿using AzurePlayground.Service.Shared;
-using Dasein.Core.Lite;
-using Dasein.Core.Lite.Shared;
-using IdentityModel.Client;
-using IdentityServer4.AccessTokenValidation;
-using IdentityServer4.Models;
-using IdentityServer4.Services;
-using IdentityServer4.Stores;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿//using AzurePlayground.Service.Shared;
+//using Dasein.Core.Lite;
+//using Dasein.Core.Lite.Shared;
+//using IdentityModel.Client;
+//using IdentityServer4.Models;
+//using IdentityServer4.Services;
+//using Microsoft.AspNetCore.Identity;
+//using Microsoft.AspNetCore.Mvc;
+//using System;
+//using System.Net.Http;
+//using System.Threading.Tasks;
 
-namespace AzurePlayground.Service
-{
-    public class IdentityController : ServiceControllerBase
-    {
-        private UserManager<AzurePlaygroundUser> _userManager;
-        private SignInManager<AzurePlaygroundUser> _signInManager;
-        private IIdentityServerInteractionService _interaction;
-        private TradeServiceConfiguration _configuration;
+//namespace AzurePlayground.Service
+//{
+//    public class IdentityController : ServiceControllerBase
+//    {
+//        private UserManager<AzurePlaygroundUser> _userManager;
+//        private SignInManager<AzurePlaygroundUser> _signInManager;
+//        private IIdentityServerInteractionService _interaction;
+//        private TradeServiceConfiguration _configuration;
 
-        public IdentityController(TradeServiceConfiguration configuration)
-        {
+//        public IdentityController(TradeServiceConfiguration configuration)
+//        {
+//            _configuration = configuration;
+//        }
 
-            _configuration = configuration;
+//        private async Task<string> GetAccessToken()
+//        {
+//            var client = new HttpClient();
 
+//            var request = new DiscoveryDocumentRequest()
+//            {
+//                Policy =
+//                {
+//                    RequireHttps = false,
+//                    RequireKeySet = false,
+//                    ValidateEndpoints = false,
+//                    ValidateIssuerName = false,
+//                },
+//                Address = "http://localhost:5001/.well-known/openid-configuration"
+//            };
 
+//            var disco = await client.GetDiscoveryDocumentAsync(request);
 
-            //_account = new AccountService(interaction, httpContextAccessor, schemeProvider, clientStore);
-        }
+//            if (disco.IsError) throw new Exception(disco.Error);
 
-        private async Task<string> GetAccessToken()
-        {
-            //var disco = new DiscoveryClient(_configuration.Identity);
-            //disco.Policy.RequireHttps = false;
-            //var discoveryResponse = await disco.GetAsync();
-            //// request token
-            ///
-            var client = new HttpClient();
+//            var accessToken = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
+//            {
+//                Address = "http://localhost:5001/connect/token",
 
-            var request = new DiscoveryDocumentRequest()
-            {
-                Policy =
-                {
-                    RequireHttps = false,
-                    RequireKeySet = false,
-                    ValidateEndpoints = false,
-                    ValidateIssuerName = false,
-                },
-                Address = "http://localhost:5001/.well-known/openid-configuration"
-            };
+//                ClientId = "AzurePlaygroundUserClient",
+//                ClientSecret = _configuration.Key.Sha256(),
+//                Scope = "AzurePlayground.Trade.Service",
+//                UserName = "alice",
+//                Password = "password"
+//            });
 
 
-            var disco = await client.GetDiscoveryDocumentAsync(request);
+//            if (accessToken.IsError)
+//            {
+//                Console.WriteLine(accessToken.Error);
+//                return accessToken.Error;
+//            }
 
-            if (disco.IsError) throw new Exception(disco.Error);
+//            Console.WriteLine(accessToken.Json);
 
-            var accessToken = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
-            {
-                Address = "http://localhost:5001/connect/token",//disco.TokenEndpoint,
-                
-                ClientId = "AzurePlaygroundUserClient",
-                ClientSecret = _configuration.Key.Sha256(),
-                Scope = "AzurePlayground.Trade.Service",
-                UserName = "alice",
-                Password = "password"
-            });
+//            return accessToken.AccessToken;
+//        }
 
+//        [HttpPost]
+//        public async Task<IActionResult> Index([FromBody] Credentials credentials)
+//        {
+//            // //_userManager.FindByNameAsync()
 
-            if (accessToken.IsError)
-            {
-                Console.WriteLine(accessToken.Error);
-                return accessToken.Error;
-            }
+//            // var dic = new Dictionary<String, string>
+//            // {
+//            //     ["Username"] = credentials.Username,
+//            //     ["Password"] = credentials.Password
+//            // };
 
-            Console.WriteLine(accessToken.Json);
+//            // return Challenge(new AuthenticationProperties(dic), IdentityServerAuthenticationDefaults.AuthenticationScheme);
+//            ////var result = await _signInManager.PasswordSignInAsync(credentials.Username, credentials.Password, true, false);
+//            //// return Ok();
 
-            return accessToken.AccessToken;
-        }
+//            using (var client = new HttpClient())
+//            {
+//                var accessToken = await GetAccessToken();
 
-        [HttpPost]
-        public async Task<IActionResult> Index([FromBody] Credentials credentials)
-        {
-            // //_userManager.FindByNameAsync()
+//                client.SetBearerToken(accessToken);
 
-            // var dic = new Dictionary<String, string>
-            // {
-            //     ["Username"] = credentials.Username,
-            //     ["Password"] = credentials.Password
-            // };
+//                var response = await client.GetAsync("http://localhost:5001/api/ApiResourceWithPolicy");
 
-            // return Challenge(new AuthenticationProperties(dic), IdentityServerAuthenticationDefaults.AuthenticationScheme);
-            ////var result = await _signInManager.PasswordSignInAsync(credentials.Username, credentials.Password, true, false);
-            //// return Ok();
+//                if (!response.IsSuccessStatusCode)
+//                {
+//                    return BadRequest();
+//                }
 
-            using (var client = new HttpClient())
-            {
-                var accessToken = await GetAccessToken();
+//                var content = await response.Content.ReadAsStringAsync();
 
-                client.SetBearerToken(accessToken);
+//                return Ok();
+//            }
 
-                var response = await client.GetAsync("http://localhost:5001/api/ApiResourceWithPolicy");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    return BadRequest();
-                }
-
-                var content = await response.Content.ReadAsStringAsync();
-
-                return Ok();
-            }
-
-        }
-    }
-}
+//        }
+//    }
+//}

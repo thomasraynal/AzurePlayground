@@ -1,0 +1,64 @@
+﻿@model ClientsViewModel
+
+<div class="grants">
+    <div class="row page-header">
+        <div class="col-sm-10">
+            <h1>
+                Registered grants
+            </h1>
+        </div>
+    </div>
+
+    @if (Model.Clients.Any() == false)
+    {
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="alert alert-info">
+                    No existing grants 
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        foreach (var clientVm in Model.Clients)
+        {
+            foreach (var grantVm in clientVm.Grants)
+            {
+
+            <div class="row grant">
+                <div class="col-sm-2">
+                    @if (clientVm.Client.LogoUri != null)
+                    {
+                        <img src="@clientVm.Client.LogoUri">
+                    }
+                </div>
+                <div class="col-sm-8">
+                    <div class="clientname">@clientVm.Client.ClientName</div>
+                    <div>
+                        <span class="created">Created:</span> @grantVm.Created.ToString("yyyy-MM-dd")
+                    </div>
+                    @if (grantVm.Expires.HasValue)
+                    {
+                        <div>
+                            <span class="expires">Expires:</span> @grantVm.Expires.Value.ToString("yyyy-MM-dd")
+                        </div>
+                    }
+                    <div>
+                        <span class="granttype">Type:</span> @grantVm.Type
+                    </div>
+                    <div>
+                        <span class="grantsubject">Subject:</span> @grantVm.SubjectId
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <form asp-action="Revoke">
+                        <input type="hidden" name="clientId" value="@grantVm.Id">
+                        <button class="btn btn-danger">Revoke</button>
+                    </form>
+                </div>
+            </div>
+            }
+        }
+    }
+</div>

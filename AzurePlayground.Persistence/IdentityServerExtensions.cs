@@ -36,34 +36,34 @@ namespace AzurePlayground.Persistence
                 service.CreateAsync(holder.User, holder.Password).Wait();
             }
         }
-        
+
+        private static void SeedInternal<TEntity>(IRepository repository, IEnumerable<TEntity> entities, bool forceClear = true) where TEntity : class, new()
+        {
+            if (forceClear || null!= entities)
+            {
+                repository.ClearTable<TEntity>();
+            }
+
+            if (null != entities)
+            {
+                repository.Add(entities);
+            }
+        }
+    
         public static void SeedIdentityServer(this IApplicationBuilder app, 
             IEnumerable<Client> clients = null, 
             IEnumerable<ApiResource> apiRessources = null,
-            IEnumerable<IdentityResource> identityRessources = null)
+            IEnumerable<IdentityResource> identityRessources = null,
+            IEnumerable<PersistedGrant> persistedGrants = null)
         {
+
             var repository = app.ApplicationServices.GetService<IRepository>();
 
-            if (null != clients)
-            {
-                repository.ClearTable<Client>();
+            SeedInternal(repository, clients);
+            SeedInternal(repository, apiRessources);
+            SeedInternal(repository, identityRessources);
+            SeedInternal(repository, persistedGrants);
 
-                repository.Add(clients);
-            }
-
-            if (null != apiRessources)
-            {
-                repository.ClearTable<ApiResource>();
-
-                repository.Add(apiRessources);
-            }
-
-            if (null != identityRessources)
-            {
-                repository.ClearTable<IdentityResource>();
-
-                repository.Add(identityRessources);
-            }
         }
     }
 }

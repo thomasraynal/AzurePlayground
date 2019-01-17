@@ -1,38 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using AzurePlayground.Authentication.Tests.Models;
+using AzurePlayground.Web.App.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http;
+using Microsoft.AspNetCore.Authentication;
+using System.Net.Http.Headers;
+using IdentityModel.Client;
 
-namespace AzurePlayground.Authentication.Tests.Controllers
+namespace AzurePlayground.Web.App.Controllers
 {
     public class HomeController : Controller
     {
+        private IDiscoveryCache _discoveryCache;
+        private IHttpClientFactory _httpClientFactory;
+
+        public HomeController(IHttpClientFactory httpClientFactory, IDiscoveryCache discoveryCache)
+        {
+            _discoveryCache = discoveryCache;
+            _httpClientFactory = httpClientFactory;
+        }
+
         public IActionResult Index()
         {
             return View();
         }
 
         [Authorize]
-        public IActionResult Data()
+        public async Task<IActionResult> Trades()
         {
-            return Ok("ok");
-        }
+            try
+            {
+                var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-        [Authorize]
-        public IActionResult Secure()
-        {
-            ViewData["Message"] = "Secure page.";
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                var content = await client.GetStringAsync("http://localhost:5000/api/v1/trades");
+                return Content(content);
 
-            return View();
+            }
+            catch (HttpRequestException ex)
+            {
+                var vm = new ErrorViewModel();
+                var message =  ex.Message;
+                return View("Error", vm);
+            }
         }
 
         public IActionResult Logout()
         {
-            return SignOut("Cookies", "oidc");
+            return SignOut("Cookie", "oidc");
         }
 
         public IActionResult Error()

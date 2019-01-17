@@ -19,9 +19,10 @@ namespace AzurePlayground.Persistence.Mongo
             builder.AddMongoClientStore();
             builder.AddMongoIdentityApiResourceStore();
             builder.AddMongoPersistedGrantStore();
+
             return builder;
         }
-
+        
         public static IIdentityServerBuilder AddMongoClientStore(this IIdentityServerBuilder builder)
         {
             BsonClassMap.RegisterClassMap<Client>(cm =>
@@ -31,6 +32,7 @@ namespace AzurePlayground.Persistence.Mongo
                 cm.SetIgnoreExtraElementsIsInherited(true);
             });
 
+            builder.Services.AddTransient<IClientRetrieverStore, ClientStore>();
             builder.Services.AddTransient<IClientStore, ClientStore>();
             builder.Services.AddTransient<ICorsPolicyService, InMemoryCorsPolicyService>();
             return builder;
@@ -65,6 +67,7 @@ namespace AzurePlayground.Persistence.Mongo
                 cm.SetIgnoreExtraElementsIsInherited(true);
             });
 
+            builder.Services.AddSingleton<IPersistedGrantRetrieverStore, PersistedGrantStore>();
             builder.Services.AddSingleton<IPersistedGrantStore, PersistedGrantStore>();
             return builder;
         }

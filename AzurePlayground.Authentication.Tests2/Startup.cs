@@ -25,7 +25,7 @@ namespace AzurePlayground.Authentication.Tests
                     options.Authority = "http://localhost:5001";
                     options.RequireHttpsMetadata = false;
                     options.Scope.Add(AzurePlaygroundConstants.Desk.DeskScope);
-                    options.ClientSecret = "secret";
+                    options.ClientSecret = "AQMZwz4588oyWcIxdDDLf";
                     options.ResponseType = "code id_token";
                     options.GetClaimsFromUserInfoEndpoint = true;
                     //"office_number", "office_number");

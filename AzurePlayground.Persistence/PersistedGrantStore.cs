@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AzurePlayground.Persistence
 {
-    public class PersistedGrantStore : IPersistedGrantStore
+    public class PersistedGrantStore : IPersistedGrantRetrieverStore 
     {
         protected IRepository _dbRepository;
 
@@ -17,9 +17,21 @@ namespace AzurePlayground.Persistence
             _dbRepository = repository;
         }
 
+        public Task<IEnumerable<PersistedGrant>> GetAllAsync()
+        {
+            var result = _dbRepository.All<PersistedGrant>().AsEnumerable();
+            return Task.FromResult(result.AsEnumerable());
+        }
+
         public Task<IEnumerable<PersistedGrant>> GetAllAsync(string subjectId)
         {
             var result = _dbRepository.Where<PersistedGrant>(i => i.SubjectId == subjectId);
+            return Task.FromResult(result.AsEnumerable());
+        }
+
+        public Task<IEnumerable<PersistedGrant>> GetAllByClientIdAsync(string clientId)
+        {
+            var result = _dbRepository.Where<PersistedGrant>(i => i.ClientId == clientId);
             return Task.FromResult(result.AsEnumerable());
         }
 

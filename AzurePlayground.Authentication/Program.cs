@@ -8,10 +8,7 @@ namespace AzurePlayground.Authentication
     {
         static void Main(string[] args)
         {
-            args = new[] { "urls=http://*:5001" };
-
             var host = new Host<AuthenticationServiceStartup>();
-
             var app = host.Build(args);
 
             app.Start();

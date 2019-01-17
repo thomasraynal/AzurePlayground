@@ -34,6 +34,8 @@ namespace AzurePlayground.Service.Shared
             public const string ClientOpenIdHybrid = "trade-service-auth-client-hybrid";
             public const string ClientOpenIdHybrid2 = "trade-service-auth-client-hybrid2";
 
+            public const string AdminRoleClaimValue = "Admin";
+            public const string AdminRolePolicy = "AdminPolicy";
         }
 
         public static class Desk

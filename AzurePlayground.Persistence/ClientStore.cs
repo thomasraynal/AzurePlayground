@@ -2,12 +2,13 @@
 using IdentityServer4.Stores;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AzurePlayground.Persistence
 {
-    public class ClientStore : IClientStore
+    public class ClientStore : IClientRetrieverStore
     {
         protected IRepository _dbRepository;
 
@@ -21,6 +22,12 @@ namespace AzurePlayground.Persistence
             var client = _dbRepository.Single<Client>(c => c.ClientId == clientId);
 
             return Task.FromResult(client);
+        }
+
+        public Task<IEnumerable<Client>> GetAllClientsAsync()
+        {
+            var clients = _dbRepository.All<Client>().AsEnumerable();
+            return Task.FromResult(clients);
         }
     }
 }

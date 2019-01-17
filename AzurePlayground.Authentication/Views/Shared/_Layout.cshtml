@@ -1,4 +1,8 @@
-﻿@using IdentityServer4.Extensions
+﻿@using Microsoft.AspNetCore.Authorization
+@using AzurePlayground.Service.Shared
+@inject IAuthorizationService AuthorizationService
+
+@using IdentityServer4.Extensions
 @{
     string name = null;
     if (!true.Equals(ViewData["signed-out"]))
@@ -30,28 +34,33 @@
                 </button>
                 <a href="~/">
                     <span class="navbar-brand">
-                        <img src="~/icon.png" class="icon-banner">IdentityServer4</span>
+                        <img src="~/icon.png" class="icon-banner">IdentityServer4
+                    </span>
                 </a>
             </div>
 
             @if (!string.IsNullOrWhiteSpace(name))
             {
-                <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">@name <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-action="Logout" asp-controller="Account">Logout</a></li>
-                        </ul>
-                    </li>
-                </ul>
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">@name <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a asp-action="Logout" asp-controller="Account">Logout</a></li>
+                    </ul>
+                </li>
+
+                @if ((await AuthorizationService.AuthorizeAsync(User, AzurePlaygroundConstants.Auth.AdminRolePolicy)).Succeeded)
+                {
+                    <li><a asp-action="Index" asp-controller="Admin">Admin</a></li>
+                }
+
+            </ul>
             }
         </div>
     </div>
-
     <div class="container body-content">
         @RenderBody()
     </div>
-
     <script src="~/lib/jquery/jquery.js"></script>
     <script src="~/lib/bootstrap/js/bootstrap.js"></script>
     @RenderSection("scripts", required: false)

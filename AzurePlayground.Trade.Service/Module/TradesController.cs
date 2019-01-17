@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AzurePlayground.Service
 {
-    public class TradeController : ServiceControllerBase<ITradeService>
+    public class TradesController : ServiceControllerBase<ITradeService>
     {
         [Authorize]
         //[Authorize(TradeServiceReferential.TraderUserPolicy)]
