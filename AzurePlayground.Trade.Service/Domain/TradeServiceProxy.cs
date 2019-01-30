@@ -15,8 +15,6 @@ namespace AzurePlayground.Service
     {
         private ISignalRService<TradeEvent, TradeEventRequest> _tradeEventService;
 
-        public static string middlewareKey = "PROCESSED_BY_MIDDLEWARE";
-
         public TradeServiceProxy()
         {
             Task.Delay(500).ContinueWith((_) =>
@@ -82,20 +80,9 @@ namespace AzurePlayground.Service
             return await Service.GetAllTrades();
         }
 
-        public async Task<IEnumerable<ITrade>> GetAllTradesViaMiddleware()
-        {
-            var trades = await Service.GetAllTrades();
-            return trades.Select(trade => new Trade(trade.Id, trade.Date, trade.Counterparty, $"{trade.Asset} [{middlewareKey}]", trade.Status, trade.Way, trade.PriceOnTransaction, trade.Volume));
-        }
-
         public async Task<ITrade> GetTradeById(Guid tradeId)
         {
             return await Service.GetTradeById(tradeId);
-        }
-
-        public Task<IEnumerable<ITrade>> GetAllTradesViaCache()
-        {
-            throw new NotImplementedException();
         }
     }
 }

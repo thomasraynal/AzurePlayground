@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  azureplayground.trade.service:
+    image: ${DOCKER_REGISTRY-}azureplaygroundtradeservice
+    build:
+      context: .
+      dockerfile: AzurePlayground.Trade.Service/Dockerfile
+    ports:
+      - "5000:5000"
+
+  azureplayground.authentication:
+    image: ${DOCKER_REGISTRY-}azureplaygroundauthentication
+    build:
+      context: .
+      dockerfile: AzurePlayground.Authentication/Dockerfile
+    ports:
+      - "5001:5001"
+
+  azureplayground.web.app:
+    image: ${DOCKER_REGISTRY-}azureplaygroundwebapp
+    build:
+      context: .
+      dockerfile: AzurePlayground.Web.App/Dockerfile
+    ports:
+      - "5002:5002"

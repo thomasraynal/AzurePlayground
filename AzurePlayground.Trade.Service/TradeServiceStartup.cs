@@ -18,6 +18,7 @@ using System.IdentityModel.Tokens.Jwt;
 using IdentityServer4;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using IdentityServer4.AccessTokenValidation;
+using Newtonsoft.Json;
 
 namespace AzurePlayground.Service
 {

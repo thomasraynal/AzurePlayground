@@ -8,11 +8,11 @@ namespace AzurePlayground.Service.Shared
 {
     public interface ITradeService
     {
-        [Put("/api/v1/trade")]
+        [Put("/api/v1/trades")]
         Task<TradeCreationResult> CreateTrade(TradeCreationRequest request);
-        [Get("/api/v1/trade")]
+        [Get("/api/v1/trades")]
         Task<IEnumerable<ITrade>> GetAllTrades();
-        [Get("/api/v1/trade/{tradeId}")]
+        [Get("/api/v1/trades/{tradeId}")]
         Task<ITrade> GetTradeById(Guid tradeId);
     }
 }

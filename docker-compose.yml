@@ -1,0 +1,37 @@
+version: '3.4'
+
+services:
+
+  authentication:
+    network_mode: host
+    image: ${DOCKER_REGISTRY-}azureplaygroundauthentication
+    build: ./AzurePlayground.Authentication
+    ports:
+      - "5001:5001"
+    environment:
+      - ASPNETCORE_URLS=http://*:5001
+
+  trades:
+    network_mode: host
+    image: ${DOCKER_REGISTRY-}azureplaygroundtradeservice
+    build: ./AzurePlayground.Trade.Service
+    ports:
+      - "5000:5000"    environment:
+      - ASPNETCORE_URLS=http://*:5000
+
+  app:
+    network_mode: host
+    image: ${DOCKER_REGISTRY-}azureplaygroundwebapp
+    build: ./AzurePlayground.Web.App
+    ports:
+      - "5002:5002"
+    environment:
+      - ASPNETCORE_URLS=http://*:5002
+
+  mongodb:
+    network_mode: host
+    image: 'bitnami/mongodb:latest'
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGODB_DATABASE=playground
