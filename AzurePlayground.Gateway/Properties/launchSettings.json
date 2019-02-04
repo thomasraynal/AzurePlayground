@@ -1,0 +1,12 @@
+{
+
+  "profiles": {
+    "AzurePlayground.Gateway": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5003"
+    }
+  }
+}

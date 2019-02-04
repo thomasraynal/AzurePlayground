@@ -22,7 +22,7 @@ namespace AzurePlayground.Service
         }
 
 
-        [Authorize]
+        //[Authorize]
         // [Authorize(TradeServiceReferential.TraderUserPolicy)]
         [HttpGet]
         public async Task<IEnumerable<ITrade>> GetAllTrades()

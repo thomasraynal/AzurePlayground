@@ -1,0 +1,17 @@
+﻿{
+  "Serilog": {
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console",
+          "outputTemplate": "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {NewLine}{Exception}"
+        }
+      }
+    ]
+  },
+  "serviceConfiguration": {
+    "name": "gateway",
+    "version": "1"
+  }
+}

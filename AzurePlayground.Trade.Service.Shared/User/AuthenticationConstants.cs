@@ -20,6 +20,10 @@ namespace AzurePlayground.Service.Shared
 
     public static class AzurePlaygroundConstants
     {
+        public static class Urls
+        {
+            public static string AppUrl = "http://app";
+        }
 
         public static class Api
         {
@@ -32,7 +36,7 @@ namespace AzurePlayground.Service.Shared
             public const string ClientReferenceToken = "trade-service-auth-client-reference-token";
             public const string ClientOpenId = "trade-service-auth-client-openid";
             public const string ClientOpenIdHybrid = "trade-service-auth-client-hybrid";
-            public const string ClientOpenIdHybrid2 = "trade-service-auth-client-hybrid2";
+            public const string ClientOpenIdNative = "native";
 
             public const string AdminRoleClaimValue = "Admin";
             public const string AdminRolePolicy = "AdminPolicy";

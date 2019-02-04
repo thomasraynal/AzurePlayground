@@ -18,7 +18,6 @@ namespace AzurePlayground.Service.Shared
         public const string OnTradeEvent = "OnTradeEvent";
         public const string PriceHub = "PriceHub";
         public const string TradeEventHub = "TradeEventHub";
-        public const string ServiceHost = "http://localhost:8080";
 
         private static readonly Random _rand = new Random();
 

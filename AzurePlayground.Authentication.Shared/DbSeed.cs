@@ -71,48 +71,48 @@ namespace AzurePlayground.Authentication
             return new List<Client>
             {
                 //reference token client
-                new Client
-                {
-                    ClientId = AzurePlaygroundConstants.Auth.ClientReferenceToken,
-                    ClientSecrets = {
-                        new Secret {
-                            Type = IdentityServerConstants.SecretTypes.SharedSecret,
-                            Value = configuration.Key.Sha256()
-                        },
-                    },
-                    AccessTokenType = AccessTokenType.Reference,
-                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                    AllowedScopes = { AzurePlaygroundConstants.Api.Name, IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile},
-                    //AccessTokenLifetime = 30
-                },
+                //new Client
+                //{
+                //    ClientId = AzurePlaygroundConstants.Auth.ClientReferenceToken,
+                //    ClientSecrets = {
+                //        new Secret {
+                //            Type = IdentityServerConstants.SecretTypes.SharedSecret,
+                //            Value = configuration.Key.Sha256()
+                //        },
+                //    },
+                //    AccessTokenType = AccessTokenType.Reference,
+                //    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                //    AllowedScopes = { AzurePlaygroundConstants.Api.Name, IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile},
+                //    //AccessTokenLifetime = 30
+                //},
 
                 //oidc client
-                new Client
-                {
-                    ClientId =  AzurePlaygroundConstants.Auth.ClientOpenId,
-                    ClientName =  AzurePlaygroundConstants.Auth.ClientOpenId,
-                    AllowedGrantTypes = GrantTypes.Implicit,
-                    RequireConsent = false,
-                    AccessTokenType = AccessTokenType.Reference,
-                    //AccessTokenLifetime =5,
-                    //AuthorizationCodeLifetime =5,
-                    //IdentityTokenLifetime = 5,
-                    RedirectUris = { "http://localhost:5002/signin-oidc" },
-                    PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
-                    AllowedScopes = { AzurePlaygroundConstants.Api.Name,IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile, AzurePlaygroundConstants.Desk.DeskScope},
-                },
+                //new Client
+                //{
+                //    ClientId =  AzurePlaygroundConstants.Auth.ClientOpenId,
+                //    ClientName =  AzurePlaygroundConstants.Auth.ClientOpenId,
+                //    AllowedGrantTypes = GrantTypes.Implicit,
+                //    RequireConsent = false,
+                //    AccessTokenType = AccessTokenType.Reference,
+                //    //AccessTokenLifetime =5,
+                //    //AuthorizationCodeLifetime =5,
+                //    //IdentityTokenLifetime = 5,
+                //    RedirectUris = { "http://localhost:5002/signin-oidc" },
+                //    PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
+                //    AllowedScopes = { AzurePlaygroundConstants.Api.Name,IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile, AzurePlaygroundConstants.Desk.DeskScope},
+                //},
                  //oidc client hybrid
                 new Client
                 {
                     ClientId =  AzurePlaygroundConstants.Auth.ClientOpenIdHybrid,
                     ClientName =  AzurePlaygroundConstants.Auth.ClientOpenIdHybrid,
-                          AccessTokenType = AccessTokenType.Reference,
+                    AccessTokenType = AccessTokenType.Reference,
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     AllowOfflineAccess = true,
                     //AccessTokenLifetime =30,
                     ClientSecrets = { new Secret(configuration.Key.Sha256()) },
                     RequireConsent = false,
-                    RedirectUris = { "http://localhost:5002/signin-oidc" },
+                    RedirectUris = { $"http://localhost:5002/signin-oidc" },
                     PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
                     FrontChannelLogoutUri =  "http://localhost:5002/signout-callback-oidc",
                     AllowedScopes = { AzurePlaygroundConstants.Api.Name,IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile, AzurePlaygroundConstants.Desk.DeskScope},
@@ -120,8 +120,8 @@ namespace AzurePlayground.Authentication
                 //pkce client
                  new Client
                 {
-                    ClientId = "native.code",
-                    ClientName = "Native Client (Code with PKCE)",
+                    ClientId =  AzurePlaygroundConstants.Auth.ClientOpenIdNative,
+                    ClientName =  AzurePlaygroundConstants.Auth.ClientOpenIdNative,
                     RedirectUris = { "http://127.0.0.1/sample-wpf-app" },
                     PostLogoutRedirectUris = { "http://127.0.0.1/sample-wpf-app" },
                     RequireClientSecret = false,

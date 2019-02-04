@@ -60,8 +60,6 @@ namespace AzurePlayground.Service
 
             this.AddSwagger(services);
 
-
-
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(TradeServiceReferential.TraderUserPolicy, policy => policy.Requirements.Add(new ClaimRequirement(ClaimTypes.Role, TradeServiceReferential.TraderClaimValue)));
@@ -98,39 +96,6 @@ namespace AzurePlayground.Service
                          options.ApiName = AzurePlaygroundConstants.Api.Name;
                          options.ApiSecret = ServiceConfiguration.Key;
                      });
-
-            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
-            //services.AddAuthentication(options =>
-            //{
-            //    options.DefaultScheme = "Cookies";
-            //    options.DefaultChallengeScheme = "oidc";
-
-            //})
-            //    .AddCookie("Cookies")
-            //    .AddOpenIdConnect("oidc", options =>
-            //    {
-            //        options.Authority = ServiceConfiguration.Identity;
-            //        options.RequireHttpsMetadata = false;
-            //        options.Scope.Add(AzurePlaygroundConstants.Desk.DeskScope);
-            //        options.Scope.Add(IdentityServerConstants.StandardScopes.Profile);
-            //        options.ClientSecret = ServiceConfiguration.Key;
-            //        options.ResponseType = "code id_token";
-            //        options.GetClaimsFromUserInfoEndpoint = true;
-            //        //"office_number", "office_number");
-            //        //options.Scope.Add(IdentityServerConstants.StandardScopes.Profile);
-            //        //options.Scope.Add(IdentityServerConstants.StandardScopes.OpenId);
-            //        //options.Scope.Add(AzurePlaygroundConstants.Api.Name);
-            //        options.ClientId = AzurePlaygroundConstants.Auth.ClientOpenIdHybrid;
-            //        options.SaveTokens = true;
-
-            //        //options.Authority = ServiceConfiguration.Identity;
-            //        //options.RequireHttpsMetadata = false;
-            //        //options.Scope.Add(AzurePlaygroundConstants.Desk.DeskScope);
-            //        //options.GetClaimsFromUserInfoEndpoint = true;
-            //        //options.ClientId = AzurePlaygroundConstants.Auth.ClientOpenId;
-            //        //options.SaveTokens = true;
-            //    });
         }
 
     protected override void OnApplicationStart()
