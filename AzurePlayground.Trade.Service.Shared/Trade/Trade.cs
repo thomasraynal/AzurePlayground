@@ -4,20 +4,17 @@ using System.Text;
 
 namespace AzurePlayground.Service.Shared
 {
-    public class Trade : ITrade
+    public class Trade : AggregateBase, ITrade
     {
-        private Guid _id;
-        private DateTime _date;
-        private string _counterparty;
-        private string _asset;
-        private TradeStatus _status;
-        private TradeWay _way;
-        private double _price;
-        private double _volume;
+
+        public Trade()
+        {
+            Id = Guid.NewGuid();
+        }
 
         public override string ToString()
         {
-            return $"{Id} [{Counterparty}] [{Asset}]";
+            return $"{Id} [{Status}] [{Asset}] [{Way}] [{Currency}] [{Volume}]";
         }
 
         public override bool Equals(object obj)
@@ -30,44 +27,31 @@ namespace AzurePlayground.Service.Shared
             return Id.GetHashCode();
         }
 
-        public Trade(Guid id, DateTime date, string counterparty, string asset, TradeStatus status, TradeWay way, double price, double volume)
-        {
-            _id = id;
-            _date = date;
-            _counterparty = counterparty;
-            _asset = asset;
-            _status = status;
-            _way = way;
-            _price = price;
-            _volume = volume;
-        }
+        public Guid Id { get; set; }
 
+        public DateTime Date { get; set; }
 
-        public Guid Id => _id;
+        public string Counterparty { get; set; }
 
-        public DateTime Date => _date;
+        public string Asset { get; set; }
 
-        public string Counterparty => _counterparty;
+        public string Currency { get; set; }
 
-        public string Asset => _asset;
+        public string Marketplace { get; set; }
 
-        public TradeStatus Status
-        {
-            get
-            {
-                return _status;
-            }
-            set
-            {
-                _status = value;
-            }
-        }
+        public TradeStatus Status { get; set; }
 
-        public TradeWay Way => _way;
+        public TradeWay Way { get; set; }
 
-        public double PriceOnTransaction => _price;
+        public double Price { get; set; }
 
-        public double Volume => _volume;
+        public double Volume { get; set; }
+
+        public override object Identifier => Id;
+
+        public string MarketService { get; set; }
+        public string TradeService { get; set; }
+        public string ComplianceService { get; set; }
 
     }
 }

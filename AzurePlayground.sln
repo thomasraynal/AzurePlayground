@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dasein.Core.Lite", "Modules
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dasein.Core.Lite.Shared", "Modules\Dasein.Core.Lite\Dasein.Core.Lite.Shared\Dasein.Core.Lite.Shared.csproj", "{EEAFB333-A35F-4083-A25E-D98986675C03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Trade.Repository", "AzurePlayground.Trade.Repository\AzurePlayground.Trade.Repository.csproj", "{5FC7544F-EB21-4960-980C-1A84C6C2D293}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Trade.Service", "AzurePlayground.Trade.Service\AzurePlayground.Trade.Service.csproj", "{9F3501B4-4C9C-4DA6-A2F8-DACA52F4C56E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Authentication", "AzurePlayground.Authentication\AzurePlayground.Authentication.csproj", "{D9D32CEF-4DD0-421D-AB8F-1CE68050E615}"
@@ -33,9 +31,13 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Events.EventStore", "AzurePlayground.Events.EventStore\AzurePlayground.Events.EventStore.csproj", "{0E8E0412-6534-4786-9CD6-3A3584C30192}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Events.RabbitMQ", "AzurePlayground.Events.RabbitMQ\AzurePlayground.Events.RabbitMQ.csproj", "{40C49232-ABC4-440B-8D81-B0A5D362BDC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Gateway", "AzurePlayground.Gateway\AzurePlayground.Gateway.csproj", "{088CBE64-3F17-4B50-896B-62542D4773B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Gateway", "AzurePlayground.Gateway\AzurePlayground.Gateway.csproj", "{088CBE64-3F17-4B50-896B-62542D4773B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Market.Service", "AzurePlayground.Market.Service\AzurePlayground.Market.Service.csproj", "{930386BF-390B-4BCD-BDB8-EC98B1C200C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Compliance.Service", "AzurePlayground.Compliance.Service\AzurePlayground.Compliance.Service.csproj", "{CB26EEDF-6D35-4B26-A85F-7F858A89168C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Trade.Generator", "AzurePlayground.Trade.Generator\AzurePlayground.Trade.Generator.csproj", "{8BFEE555-68FC-448E-A8A2-6AD9211F7435}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,10 +65,6 @@ Global
 		{EEAFB333-A35F-4083-A25E-D98986675C03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEAFB333-A35F-4083-A25E-D98986675C03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEAFB333-A35F-4083-A25E-D98986675C03}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5FC7544F-EB21-4960-980C-1A84C6C2D293}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5FC7544F-EB21-4960-980C-1A84C6C2D293}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5FC7544F-EB21-4960-980C-1A84C6C2D293}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5FC7544F-EB21-4960-980C-1A84C6C2D293}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9F3501B4-4C9C-4DA6-A2F8-DACA52F4C56E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9F3501B4-4C9C-4DA6-A2F8-DACA52F4C56E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F3501B4-4C9C-4DA6-A2F8-DACA52F4C56E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -103,14 +101,22 @@ Global
 		{0E8E0412-6534-4786-9CD6-3A3584C30192}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E8E0412-6534-4786-9CD6-3A3584C30192}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E8E0412-6534-4786-9CD6-3A3584C30192}.Release|Any CPU.Build.0 = Release|Any CPU
-		{40C49232-ABC4-440B-8D81-B0A5D362BDC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{40C49232-ABC4-440B-8D81-B0A5D362BDC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{40C49232-ABC4-440B-8D81-B0A5D362BDC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{40C49232-ABC4-440B-8D81-B0A5D362BDC3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{088CBE64-3F17-4B50-896B-62542D4773B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{088CBE64-3F17-4B50-896B-62542D4773B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{088CBE64-3F17-4B50-896B-62542D4773B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{088CBE64-3F17-4B50-896B-62542D4773B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{930386BF-390B-4BCD-BDB8-EC98B1C200C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{930386BF-390B-4BCD-BDB8-EC98B1C200C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{930386BF-390B-4BCD-BDB8-EC98B1C200C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{930386BF-390B-4BCD-BDB8-EC98B1C200C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB26EEDF-6D35-4B26-A85F-7F858A89168C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB26EEDF-6D35-4B26-A85F-7F858A89168C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB26EEDF-6D35-4B26-A85F-7F858A89168C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB26EEDF-6D35-4B26-A85F-7F858A89168C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BFEE555-68FC-448E-A8A2-6AD9211F7435}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BFEE555-68FC-448E-A8A2-6AD9211F7435}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BFEE555-68FC-448E-A8A2-6AD9211F7435}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BFEE555-68FC-448E-A8A2-6AD9211F7435}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

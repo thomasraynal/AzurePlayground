@@ -8,9 +8,13 @@
     "AzurePlayground.Trade.Service": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "serviceConfiguration:identity": "http://localhost:5001",
+        "serviceConfiguration:consul": "http://localhost:8500",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "serviceConfiguration:eventstore": "tcp://admin:changeit@localhost:1113",
+        "serviceConfiguration:id": "trade1"
       },
-      "applicationUrl": "http://localhost:5001"
+      "applicationUrl": "http://localhost:5004"
     },
     "Docker": {
       "commandName": "Docker",

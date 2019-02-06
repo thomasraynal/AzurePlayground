@@ -6,11 +6,27 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5001
+          "Port": 5004
         }
       ],
       "UpstreamPathTemplate": "/api/{version}/trades/{everything}",
-      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/trades",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5004
+        }
+      ],
+      "UpstreamPathTemplate": "/api/{version}/trades",
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Identity",
+        "AllowedScopes": []
+      }
     }
   ],
   "GlobalConfiguration": {

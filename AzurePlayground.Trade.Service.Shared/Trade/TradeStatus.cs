@@ -8,8 +8,9 @@ namespace AzurePlayground.Service.Shared
     {
         None,
         Created,
-        ComplianceCheck,
-        Processed,
-        Rejected
+        PreTradeCheckFailed,
+        Filled,
+        ComplianceCheckFailed,
+        Booked
     }
 }

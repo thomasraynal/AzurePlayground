@@ -1,4 +1,5 @@
 ﻿using AzurePlayground.Service.Shared;
+using AzurePlayground.Web.App.Infrastructure;
 using AzurePlayground.Web.App.Models;
 using Dasein.Core.Lite.Shared;
 using Microsoft.AspNetCore.Authentication;
@@ -25,7 +26,7 @@ namespace AzurePlayground.Web.App
 
                 var vm = new TradesViewModel()
                 {
-                    Trades = trades
+                    Trades = trades.Select(trade => new TradeViewModel(trade))
                 };
 
                 return View("Trades", vm);
@@ -39,9 +40,9 @@ namespace AzurePlayground.Web.App
             }
         }
 
-        public TradesController()
+        public TradesController(AppConfiguration configuration)
         {
-            _tradeService = ApiServiceBuilder<ITradeService>.Build("http://localhost:5000")
+            _tradeService = ApiServiceBuilder<ITradeService>.Build(configuration.Gateway)
                                                 .AddAuthorizationHeader(() =>
                                                 {
                                                     return HttpContext.GetTokenAsync("access_token").Result;

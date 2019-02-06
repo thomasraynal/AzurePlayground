@@ -10,7 +10,7 @@ namespace AzurePlayground.Web.App
 {
     public class TradesViewModel
     {
-        public IEnumerable<ITrade> Trades { get; set; }
+        public IEnumerable<TradeViewModel> Trades { get; set; }
         public string Json
         {
             get

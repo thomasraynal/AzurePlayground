@@ -1,0 +1,18 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true
+  },
+  "profiles": {
+    "AzurePlayground.Trade.Generator": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "serviceConfiguration:identity": "http://localhost:5001",
+        "serviceConfiguration:consul": "http://localhost:8500",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "serviceConfiguration:eventstore": "tcp://admin:changeit@localhost:1113"
+      },
+      "applicationUrl": "http://localhost:5010"
+    }
+  }
+}

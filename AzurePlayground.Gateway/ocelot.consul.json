@@ -1,0 +1,28 @@
+{
+  "ReRoutes": [
+    {
+      "DownstreamPathTemplate": "/api/{version}/trades/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/{version}/trades/{everything}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "ServiceName": "trades",
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/trades",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/{version}/trades",
+      "UpstreamHttpMethod": [ "GET", "PUT" ],
+      "ServiceName": "trades",
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      }
+    }
+  ],
+  "GlobalConfiguration": {
+    "RequestIdKey": "OcRequestId",
+    "AdministrationPath": "/administration"
+  }
+}

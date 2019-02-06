@@ -6,6 +6,8 @@ using Ocelot.Middleware;
 using Ocelot.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using System;
+using Ocelot.Provider.Consul;
 
 namespace AzurePlayground.Gateway
 {
@@ -42,8 +44,8 @@ namespace AzurePlayground.Gateway
                     .AllowCredentials());
             });
 
-
-            services.AddOcelot(_configuration);
+            services.AddOcelot()
+                    .AddConsul();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

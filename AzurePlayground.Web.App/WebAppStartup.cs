@@ -83,7 +83,7 @@ namespace AzurePlayground.Web.App
                 options.Scope.Clear();
                 options.Scope.Add(IdentityServerConstants.StandardScopes.Profile);
                 options.Scope.Add(IdentityServerConstants.StandardScopes.OpenId);
-                options.Scope.Add(AzurePlaygroundConstants.Api.Name);
+                options.Scope.Add(AzurePlaygroundConstants.Api.Trade);
                 options.Scope.Add("offline_access");
 
                 options.ClaimActions.MapAll();

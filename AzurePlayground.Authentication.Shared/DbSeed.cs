@@ -49,7 +49,7 @@ namespace AzurePlayground.Authentication
         {
             return new List<ApiResource>()
             {
-                new ApiResource(AzurePlaygroundConstants.Api.Name, AzurePlaygroundConstants.Api.Description)
+                new ApiResource(AzurePlaygroundConstants.Api.Trade, AzurePlaygroundConstants.Api.Description)
                 {
                     ApiSecrets = { new Secret(configuration.Key.Sha256()) }                    
                 }
@@ -71,20 +71,15 @@ namespace AzurePlayground.Authentication
             return new List<Client>
             {
                 //reference token client
-                //new Client
-                //{
-                //    ClientId = AzurePlaygroundConstants.Auth.ClientReferenceToken,
-                //    ClientSecrets = {
-                //        new Secret {
-                //            Type = IdentityServerConstants.SecretTypes.SharedSecret,
-                //            Value = configuration.Key.Sha256()
-                //        },
-                //    },
-                //    AccessTokenType = AccessTokenType.Reference,
-                //    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                //    AllowedScopes = { AzurePlaygroundConstants.Api.Name, IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile},
-                //    //AccessTokenLifetime = 30
-                //},
+                new Client
+                {
+                    ClientId = AzurePlaygroundConstants.Auth.ClientReferenceToken,
+                    ClientSecrets = { new Secret { Value = configuration.Key.Sha256()},
+                    },
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    AllowedScopes = { AzurePlaygroundConstants.Api.Trade },
+                    AccessTokenLifetime = 3600 * 24
+                },
 
                 //oidc client
                 //new Client
@@ -115,7 +110,7 @@ namespace AzurePlayground.Authentication
                     RedirectUris = { $"http://localhost:5002/signin-oidc" },
                     PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
                     FrontChannelLogoutUri =  "http://localhost:5002/signout-callback-oidc",
-                    AllowedScopes = { AzurePlaygroundConstants.Api.Name,IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile, AzurePlaygroundConstants.Desk.DeskScope},
+                    AllowedScopes = { AzurePlaygroundConstants.Api.Trade,IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile, AzurePlaygroundConstants.Desk.DeskScope},
                 },
                 //pkce client
                  new Client
@@ -128,7 +123,7 @@ namespace AzurePlayground.Authentication
                     RequireConsent = false,
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
-                    AllowedScopes = {  AzurePlaygroundConstants.Api.Name,IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile,AzurePlaygroundConstants.Desk.DeskScope },
+                    AllowedScopes = {  AzurePlaygroundConstants.Api.Trade,IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile,AzurePlaygroundConstants.Desk.DeskScope },
                     AllowOfflineAccess = true,
                     RefreshTokenUsage = TokenUsage.ReUse
                 }

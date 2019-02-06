@@ -20,14 +20,10 @@ namespace AzurePlayground.Service.Shared
 
     public static class AzurePlaygroundConstants
     {
-        public static class Urls
-        {
-            public static string AppUrl = "http://app";
-        }
 
         public static class Api
         {
-            public const string Name = "trade";
+            public const string Trade = "trade";
             public const string Description = "Trade Service";
         }
 

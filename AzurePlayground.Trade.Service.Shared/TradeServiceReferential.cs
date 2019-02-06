@@ -10,6 +10,18 @@ namespace AzurePlayground.Service.Shared
 
     public static class TradeServiceReferential
     {
+
+        public static T Random<T>(this IEnumerable<T> enumerable)
+        {
+            if (enumerable == null)
+            {
+                throw new ArgumentNullException(nameof(enumerable));
+            }
+
+            var list = enumerable as IList<T> ?? enumerable.ToList();
+            return list.Count == 0 ? default(T) : list[_rand.Next(0, list.Count)];
+        }
+
         public const string TraderUserPolicy = "TraderUserPolicy";
         public const string TraderClaimValue = "Trader";
         public const string OnPriceChanged = "OnPriceChanged";
@@ -19,7 +31,7 @@ namespace AzurePlayground.Service.Shared
         public const string PriceHub = "PriceHub";
         public const string TradeEventHub = "TradeEventHub";
 
-        private static readonly Random _rand = new Random();
+        private static readonly Random _rand = new Random(Environment.TickCount);
 
         private static IEnumerable<string> _counterparties = new[]
         {
@@ -48,19 +60,23 @@ namespace AzurePlayground.Service.Shared
             }
         }
 
+
         public static ITrade GenerateTrade()
         {
             var asset = Assets.Random();
 
-            return new Trade(
-                Guid.NewGuid(),
-                DateTime.Now,
-                Counterparties.Random(),
-                asset.Name,
-                TradeStatus.Processed,
-                Rand.Next(0, 2) == 0 ? TradeWay.Sell : TradeWay.Buy,
-                asset.Price,
-                Rand.Next(10, 100));
+            return new Trade()
+            {
+                Id = Guid.NewGuid(),
+                Date = DateTime.Now,
+                Counterparty = Counterparties.Random(),
+                Asset = asset.Name,
+                Status = TradeStatus.Booked,
+                Way = Rand.Next(0, 2) == 0 ? TradeWay.Sell : TradeWay.Buy,
+                Price = asset.Price,
+                Volume = Rand.Next(10, 100)
+            };
+
         }
 
         public static IEnumerable<Asset> Assets
@@ -70,6 +86,22 @@ namespace AzurePlayground.Service.Shared
                 return _assets;
             }
         }
+
+
+        public static IEnumerable<Market> Markets
+        {
+            get
+            {
+                return _markets;
+            }
+        }
+
+        private static readonly IEnumerable<Market> _markets = new[]
+                {
+                    new Market(){Name = "Market1"},
+                    new Market(){Name = "Market2"},
+                    new Market(){Name = "Market3"}
+                };
 
 
         private static readonly IEnumerable<Asset> _assets =

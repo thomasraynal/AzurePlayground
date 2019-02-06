@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <UserSecretsId>488f8b87-8cde-4606-a65a-f4400248d3c9</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
@@ -16,7 +16,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="3.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.0.2105168" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
@@ -24,6 +23,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\AzurePlayground.Events.EventStore\AzurePlayground.Events.EventStore.csproj" />
     <ProjectReference Include="..\AzurePlayground.Trade.Service.Shared\AzurePlayground.Trade.Service.Shared.csproj" />
     <ProjectReference Include="..\Modules\Dasein.Core.Lite\Dasein.Core.Lite.Shared\Dasein.Core.Lite.Shared.csproj" />
     <ProjectReference Include="..\Modules\Dasein.Core.Lite\Dasein.Core.Lite\Dasein.Core.Lite.csproj" />
@@ -33,6 +33,10 @@
     <Content Update="config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

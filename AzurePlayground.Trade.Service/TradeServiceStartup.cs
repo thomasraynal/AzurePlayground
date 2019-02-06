@@ -5,20 +5,21 @@ using FluentValidation.AspNetCore;
 using GraphQL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 using System;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Dasein.Core.Lite.Hosting;
-using System.IdentityModel.Tokens.Jwt;
-using IdentityServer4;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using IdentityServer4.AccessTokenValidation;
-using Newtonsoft.Json;
+using Consul;
+using Microsoft.Extensions.Hosting;
+
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using AzurePlayground.EventStore.Infrastructure;
+using AzurePlayground.EventStore;
+using AzurePlayground.Events.EventStore;
 
 namespace AzurePlayground.Service
 {
@@ -30,13 +31,14 @@ namespace AzurePlayground.Service
             {
                 scanner.AssembliesAndExecutablesFromApplicationBaseDirectory();
                 scanner.WithDefaultConventions();
+
+                scanner.AddAllTypesOf<IEvent>();
+                scanner.ConnectImplementationsToTypesClosing(typeof(IMutable<,>));
                 scanner.ConnectImplementationsToTypesClosing(typeof(ISignalRService<,>));
                 scanner.ConnectImplementationsToTypesClosing(typeof(IServiceProxy<>)).OnAddedPluginTypes(p => p.Singleton());
             });
 
             this.RegisterService<ITradeService, TradeService>();
-            this.RegisterCacheProxy<IPriceService, PriceService>();
-
         }
     }
 
@@ -49,16 +51,22 @@ namespace AzurePlayground.Service
         protected override void ConfigureServicesInternal(IServiceCollection services)
         {
             services.AddSerilog(Configuration);
+
             services.AddSingleton<IHubConfiguration>(ServiceConfiguration);
             services.AddSingleton<IHubContextHolder<Price>, HubContextHolder<Price>>();
             services.AddSingleton<IHubContextHolder<TradeEvent>, HubContextHolder<TradeEvent>>();
             services.AddSingleton<ICacheStrategy<MethodCacheObject>, DefaultCacheStrategy<MethodCacheObject>>();
             services.AddSingleton<ICacheStrategy<ResponseCacheEntry>, DefaultCacheStrategy<ResponseCacheEntry>>();
             services.AddTransient<IAuthorizationHandler, ClaimRequirementHandler>();
-            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
-            services.AddSingleton<IMemoryCache, ResponseMemoryCache>();
 
-            this.AddSwagger(services);
+            services.AddEventStore<EventStoreRepository>(ServiceConfiguration.EventStore)
+                    .AddEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>, TradeEventCache>();
+
+            services.AddSingleton<IHostedService, TradeEventListener>();
+
+            services.AddConsulRegistration(ServiceConfiguration);
+
+            services.AddSwagger(ServiceConfiguration);
 
             services.AddAuthorization(options =>
             {
@@ -78,8 +86,6 @@ namespace AzurePlayground.Service
                         options.PayloadSerializerSettings = jsonSettings;
                     });
 
-            services.AddResponseCaching();
-
             services.AddMvc(options =>
                     {
                         options.Filters.Add(typeof(ValidateModelStateAttribute));
@@ -93,31 +99,18 @@ namespace AzurePlayground.Service
                      {
                          options.RequireHttpsMetadata = false;
                          options.Authority = ServiceConfiguration.Identity;
-                         options.ApiName = AzurePlaygroundConstants.Api.Name;
+                         options.ApiName = AzurePlaygroundConstants.Api.Trade;
                          options.ApiSecret = ServiceConfiguration.Key;
                      });
         }
 
-    protected override void OnApplicationStart()
-        {
-            
-            Task.Delay(500).Wait();
-
-            var publishers = AppCore.Instance.GetAll<IPublisher>();
-
-            foreach (var publisher in publishers)
-            {
-                 publisher.Start().Wait();
-            }
-        }
-
         protected override void ConfigureInternal(IApplicationBuilder app)
         {
-            this.UseSwagger(app);
+            app.UseSwagger(ServiceConfiguration);
 
             app.UseAuthentication();
 
-            app.UseResponseCaching();
+            app.UseConsulRegistration();
 
             app.UseMvc();
         }

@@ -11,5 +11,6 @@ namespace AzurePlayground.Web.App.Infrastructure
         public override string Name { get; set; }
         public override int Version { get; set; }
         public string Identity { get; set; }
+        public string Gateway { get; set; }
     }
 }

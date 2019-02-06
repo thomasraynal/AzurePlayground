@@ -10,6 +10,7 @@ namespace AzurePlayground.Gateway
     {
         public const String serviceConfigFile = "config.json";
         public const String ocelotConfigFile = "ocelot.json";
+        public const String ocelotConsulConfigFile = "ocelot.consul.json";
 
         protected virtual IConfigurationBuilder Configure(IConfigurationBuilder builder)
         {
@@ -21,7 +22,7 @@ namespace AzurePlayground.Gateway
 
             var builder = new ConfigurationBuilder()
                 .AddJsonFile(serviceConfigFile, true, true)
-                .AddJsonFile(ocelotConfigFile, true, true)
+                .AddJsonFile(ocelotConsulConfigFile, false, true)
                 .AddCommandLine(args)
                 .AddEnvironmentVariables();
 
@@ -34,13 +35,6 @@ namespace AzurePlayground.Gateway
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<GatewayServiceStartup>()
                 .UseKestrel()
-                //.UseSerilog((builderContext, configuration) =>
-                //{
-                //    configuration
-                //        .MinimumLevel.Information()
-                //        .Enrich.FromLogContext()
-                //        .WriteTo.Console();
-                //})
                 .Build();
         }
     }

@@ -15,6 +15,7 @@ using AzurePlayground.Persistence.Mongo;
 using IdentityServer4.Stores;
 using AzurePlayground.Service.Shared;
 using IdentityModel;
+using IdentityServer4.Validation;
 
 namespace AzurePlayground.Authentication
 {
@@ -52,7 +53,9 @@ namespace AzurePlayground.Authentication
             })
                 .AddMongoStores()
                 .AddProfileService<AllAvailableClaimsProfileService>()
-                .AddSigningCredential(IdentityServerBuilderExtensionsCrypto.CreateRsaSecurityKey());
+                .AddSigningCredential(IdentityServerBuilderExtensionsCrypto.CreateRsaSecurityKey())
+                .Services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
+               
 
 
             services.AddAuthorization(options =>
@@ -60,8 +63,7 @@ namespace AzurePlayground.Authentication
                 options.AddPolicy(AzurePlaygroundConstants.Auth.AdminRolePolicy, policy => policy.RequireRole(AzurePlaygroundConstants.Auth.AdminRoleClaimValue));
             });
 
-
-            this.AddSwagger(services);
+            services.AddSwagger(ServiceConfiguration);
 
             var jsonSettings = new ServiceJsonSerializerSettings();
 
@@ -95,7 +97,7 @@ namespace AzurePlayground.Authentication
 
             app.UseStaticFiles();
 
-            this.UseSwagger(app);
+            app.UseSwagger(ServiceConfiguration);
 
             app.UseMvcWithDefaultRoute();
         }

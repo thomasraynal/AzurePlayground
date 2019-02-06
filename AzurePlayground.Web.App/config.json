@@ -14,6 +14,7 @@
   "serviceConfiguration": {
     "name": "trade-app",
     "identity": "http://localhost:5001",
+    "gateway": "http://localhost:5003",
     "version": "1"
   }
 }

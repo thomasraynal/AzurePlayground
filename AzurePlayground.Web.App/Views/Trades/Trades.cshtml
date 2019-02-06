@@ -8,40 +8,19 @@
 
         <thead>
             <tr>
-                <th>Id</th>
+                <th>CurrentPrice</th>
                 <th>Date</th>
                 <th>Counterparty</th>
                 <th>Asset</th>
                 <th>Status</th>
                 <th>Way</th>
-                <th>PriceOnTransaction</th>
+                <th>Price</th>
                 <th>Volume</th>
 
             </tr>
         </thead>
-        <!-- <tfoot>
-            <tr>
-                <th>author</th>
-                <th>tag</th>
-                <th>quote</th>
-            </tr>
-        </tfoot> -->
-
     </table>
-    @*<table id="trades" class="table table-striped table-bordered dt-responsive nowrap">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Date</th>
-                    <th>Counterparty</th>
-                    <th>Asset</th>
-                    <th>Status</th>
-                    <th>Way</th>
-                    <th>PriceOnTransaction</th>
-                    <th>Volume</th>
-                </tr>
-            </thead>
-        </table>*@
+
 
 </div>
 
@@ -52,13 +31,13 @@
             "data": @Html.Raw(@Model.Json),
             responsive: true,
             "columns": [
-                { "data": "id" },
+                { "data": "currentPrice" },
                 { "data": "date" },
                 { "data": "counterparty" },
                 { "data": "asset" },
                 { "data": "status" },
                 { "data": "way" },
-                { "data": "priceOnTransaction" },
+                { "data": "price" },
                 { "data": "volume" }
             ]
         });

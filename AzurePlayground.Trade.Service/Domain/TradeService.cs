@@ -1,4 +1,7 @@
-﻿using AzurePlayground.Service.Shared;
+﻿using AzurePlayground.Events.EventStore;
+using AzurePlayground.EventStore;
+using AzurePlayground.EventStore.Infrastructure;
+using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite;
 using Dasein.Core.Lite.Shared;
 using System;
@@ -12,54 +15,51 @@ namespace AzurePlayground.Service
 {
     public class TradeService : IService<ITradeService>, ITradeService, ICanLog
     {
-        private readonly List<ITrade> _repository;
-        private ISignalRService<TradeEvent, TradeEventRequest> _tradeEventService;
+        private IEventStoreRepository _repository;
+        private TradeServiceConfiguration _configuration;
+        private IEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>> _cache;
 
-        public TradeService()
+        public TradeService(IEventStoreRepository repository, TradeServiceConfiguration configuration, IEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>> cache)
         {
-            _repository = new List<ITrade>();
-
-            for (var i = 0; i < 10; i++)
-            {
-                var trade = TradeServiceReferential.GenerateTrade();
-                _repository.Add(trade);
-            }
-
-            //_tradeEventService = SignalRServiceBuilder<TradeEvent, TradeEventRequest>
-            //                    .Create()
-            //                    .Build(new TradeEventRequest((p) => true));
-
-            //_tradeEventService.Connect(Scheduler.Default, 1000)
-            //                   .Subscribe((tradeEvent) =>
-            //                   {
-            //                       var trade = _repository.FirstOrDefault(t => t.Id == tradeEvent.TradeId);
-            //                       trade.Status = tradeEvent.Status;
-            //                   });
+            _repository = repository;
+            _configuration = configuration;
+            _cache = cache;
         }
 
-        public Task<TradeCreationResult> CreateTrade(TradeCreationRequest request)
+        public async Task<TradeCreationResult> CreateTrade(TradeCreationRequest request)
         {
-            var trade = new Trade(Guid.NewGuid(), DateTime.Now, request.Counterparty, request.Asset, TradeStatus.None, request.Way, request.Price, request.Volume);
-            _repository.Add(trade);
+        
+            var trade = new Trade();
 
-            var result = new TradeCreationResult()
+            var tradeCreationEvent = new CreateTrade()
             {
-                TradeId = trade.Id,
-                TradeStatus = TradeStatus.Created
+                EntityId = trade.Id,
+                Asset = request.Asset,
+                Currency = request.Currency,
+                Volume = request.Volume,
+                Way = request.Way,
+                TradeService = _configuration.Id
             };
 
-            return Task.FromResult(result);
+            trade.ApplyEvent(tradeCreationEvent);
+
+            await _repository.SaveAsync(trade);
+
+            return new TradeCreationResult()
+            {
+                TradeId = trade.Id
+            };
 
         }
 
         public Task<IEnumerable<ITrade>> GetAllTrades()
         {
-            return Task.FromResult(_repository.Cast<ITrade>());
+            return Task.FromResult(_cache.CacheState.State.Select(trade => trade.Value).Cast<ITrade>());
         }
 
-        public Task<ITrade> GetTradeById(Guid tradeId)
+        public async Task<ITrade> GetTradeById(Guid tradeId)
         {
-            return Task.FromResult(_repository.FirstOrDefault(trade => trade.Id == tradeId));
+            return await _repository.GetById<Trade>(tradeId);
         }
     }
 }
