@@ -46,7 +46,7 @@ namespace AzurePlayground.EventStore.Infrastructure
 
             var streamName = $"{id}";
        
-            var eventNumber = 0l;
+            var eventNumber = 0L;
 
             StreamEventsSlice currentSlice;
             do

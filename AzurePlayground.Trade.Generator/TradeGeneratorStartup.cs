@@ -47,8 +47,9 @@ namespace AzurePlayground.Generator
             services.AddTransient<IAuthorizationHandler, ClaimRequirementHandler>();
 
             services.AddSingleton<IHostedService, TradeGenerator>();
-           
-            var jsonSettings = new ServiceJsonSerializerSettings();
+
+            var jsonSettings = new TradeServiceJsonSerializerSettings();
+
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(ValidateModelStateAttribute));

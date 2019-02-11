@@ -11,7 +11,10 @@
     "AzurePlayground.Authentication": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "identity": "http://localhost:5001",
+        "mongoDatabase": "playground",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "mongoConnectionString": "mongodb://127.0.0.1:27017"
       },
       "applicationUrl": "http://localhost:5001/"
     },

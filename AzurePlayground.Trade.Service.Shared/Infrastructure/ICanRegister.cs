@@ -6,7 +6,8 @@ namespace AzurePlayground.Service.Shared
 {
     public interface ICanRegister
     {
-        string Consult { get; set; }
+        string Consul { get; set; }
+        double RetryTimeout { get; set; }
         string Id { get; set; }
         string Name { get; set; }
     }

@@ -15,18 +15,10 @@
       {
         "name": "PriceHub",
         "endpoints": [ "http://localhost:8888/hub/price", "http://localhost:8080/hub/price" ]
-      },
-      {
-        "name": "TradeEventHub",
-        "endpoints": [ "http://localhost:8080/hub/trade" ]
       }
-
     ],
-    "name": "markets",
+    "name": "market",
     "version": "1",
-    "consult": "http://localhost:8500",
-    "identity": "http://localhost:5001",
-    "eventstore": "tcp://admin:changeit@localhost:1113",
     "key": "AQMZwz4588oyWcIxdDDLf"
   }
 }

@@ -15,18 +15,7 @@ using System.Threading.Tasks;
 
 namespace AzurePlayground.EventStore
 {
-    public class CacheState<TKey, TCacheItem>
-    {
-        public CacheState()
-        {
-            State = new ConcurrentDictionary<TKey, TCacheItem>();
-            IsStale = true;
-        }
 
-        public bool IsStale { get; set; }
-
-        public ConcurrentDictionary<TKey, TCacheItem> State { get; }
-    }
 
     public abstract class EventStoreCache<TKey, TCacheItem, TOutput> : IDisposable, IEventStoreCache<TKey, TCacheItem, TOutput>, ICanLog
     {
@@ -84,7 +73,8 @@ namespace AzurePlayground.EventStore
 
         public IObservable<TOutput> GetOutputStream()
         {
-            return GetOutputStreamInternal().SubscribeOn(_eventLoopScheduler)
+            return GetOutputStreamInternal()
+                                        .SubscribeOn(_eventLoopScheduler)
                                         .TakeUntil(_connectionChanged.Where(x => x.IsConnected))
                                         .Repeat();
         }
@@ -101,8 +91,6 @@ namespace AzurePlayground.EventStore
 
         private void Initialize(IEventStoreConnection connection)
         {
-
-            this.LogInformation("Initializing Cache");
 
             CacheState.IsStale = true;
             CacheState.State.Clear();
@@ -129,13 +117,11 @@ namespace AzurePlayground.EventStore
             return Observable.Create<TOutput>(obs =>
             {
 
-                this.LogInformation("Got stream request from client");
-
-                var sotw = _cacheStatedUpdates
+                var state = _cacheStatedUpdates
                                     .TakeUntilInclusive(x => !x.IsStale)
                                     .Select(CreateResponseFromCacheState);
 
-                return sotw.Concat(_events.Select(evt => MapSingleEventToUpdateDto(CacheState.State, evt)))
+                return state.Concat(_events.Select(evt => MapSingleEventToUpdateDto(CacheState.State, evt)))
                            .Merge(_connectionChanged.Where(x => !x.IsConnected).Select(_ => GetDisconnectedStaleUpdate()))
                            .Where(IsValidUpdate)
                            .Subscribe(obs);
@@ -146,8 +132,6 @@ namespace AzurePlayground.EventStore
         {
             return Observable.Create<RecordedEvent>(o =>
             {
-
-                this.LogInformation("Getting events from EventStore");
 
                 Task onEvent(EventStoreCatchUpSubscription _, ResolvedEvent e)
                 {
@@ -163,9 +147,6 @@ namespace AzurePlayground.EventStore
                 {
                     _eventLoopScheduler.Schedule(() =>
                     {
-
-                        this.LogInformation("Caught up to live events. Publishing State");
-
                         _isCaughtUp = true;
                         CacheState.IsStale = false;
                         _cacheStatedUpdates.OnNext(CacheState);

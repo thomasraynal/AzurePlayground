@@ -1,11 +1,21 @@
 {
   "ReRoutes": [
     {
+      "DownstreamPathTemplate": "/api/{version}/price/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/{version}/price/{everything}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "ServiceName": "price",
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      }
+    },
+    {
       "DownstreamPathTemplate": "/api/{version}/trades/{everything}",
       "DownstreamScheme": "http",
       "UpstreamPathTemplate": "/api/{version}/trades/{everything}",
       "UpstreamHttpMethod": [ "GET" ],
-      "ServiceName": "trades",
+      "ServiceName": "trade",
       "LoadBalancerOptions": {
         "Type": "RoundRobin"
       }
@@ -15,7 +25,7 @@
       "DownstreamScheme": "http",
       "UpstreamPathTemplate": "/api/{version}/trades",
       "UpstreamHttpMethod": [ "GET", "PUT" ],
-      "ServiceName": "trades",
+      "ServiceName": "trade",
       "LoadBalancerOptions": {
         "Type": "RoundRobin"
       }
@@ -23,6 +33,10 @@
   ],
   "GlobalConfiguration": {
     "RequestIdKey": "OcRequestId",
-    "AdministrationPath": "/administration"
+    "ServiceDiscoveryProvider": {
+      "Host": "localhost",
+      "Port": 8500,
+      "Type": "Consul"
+    }
   }
 }

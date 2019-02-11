@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
-namespace AzurePlayground.Service.Domain
+namespace AzurePlayground.Service
 {
-    public class PriceController : ServiceControllerBase
+    public class PriceController : ServiceControllerBase<IPriceService>
     {
         private IPriceService _priceService;
 
@@ -17,13 +18,11 @@ namespace AzurePlayground.Service.Domain
             _priceService = priceService;
         }
 
-        [Authorize(TradeServiceReferential.TraderUserPolicy)]
         [HttpGet]
-        public async Task<IEnumerable<IPrice>> GetPrices(bool cache = true)
+        [ProducesResponseType(typeof(IPrice), (int)HttpStatusCode.OK)]
+        public async Task<IPrice> GetPrice([FromQuery] string assetId)
         {
-            if (cache) return await _priceService.GetAllPrices();
-
-            return await _priceService.GetPricesNoCache();
+            return await Service.GetPrice(assetId);
         }
     }
 }

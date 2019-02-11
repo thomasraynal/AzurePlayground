@@ -6,6 +6,9 @@ using Dasein.Core.Lite.Shared;
 using IdentityModel.Client;
 using IdentityServer4.Models;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Polly;
+using Refit;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -38,6 +41,14 @@ namespace AzurePlayground.Generator
             _jwthandler = new JwtSecurityTokenHandler();
             _cleanup = new CompositeDisposable();
 
+            var settings = AppCore.Instance.Get<JsonSerializerSettings>();
+
+            var refitSettings = new RefitSettings()
+            {
+                JsonSerializerSettings = settings,
+                HttpMessageHandlerFactory = () => new HttpRetryForeverMessageHandler(5000)
+            };
+
             _tradeService = ApiServiceBuilder<ITradeService>
                                     .Build(configuration.Gateway)
                                     .AddAuthorizationHeader(() =>
@@ -47,14 +58,16 @@ namespace AzurePlayground.Generator
 
                                         if (jwttoken.ValidTo <= DateTime.Now)
                                         {
-                                            _token = GetAccessToken().Result;
+                                            _token = GetAccessToken();
                                         }
 
                                         return _token;
                                     })
-                                    .Create();
+                                    .Create(refitSettings: refitSettings);
 
-            _token = GetAccessToken().Result;
+
+      
+            _token = GetAccessToken();
 
 
         }
@@ -66,6 +79,7 @@ namespace AzurePlayground.Generator
                                     {
                                         try
                                         {
+
                                             var requestResult = await _tradeService.CreateTrade(new TradeCreationRequest()
                                             {
                                                 Asset = TradeServiceReferential.Assets.Random().Name,
@@ -77,7 +91,9 @@ namespace AzurePlayground.Generator
                                             this.LogInformation($"Trade Request - {requestResult.TradeId}");
 
                                         }
-                                        catch { }
+                                        catch( Exception ex) {
+                                            this.LogError(ex);
+                                        }
 
                                     });
 
@@ -101,7 +117,6 @@ namespace AzurePlayground.Generator
             _cleanup.Add(observerDisposable);
 
 
-
             return Task.CompletedTask;
         }
 
@@ -111,7 +126,7 @@ namespace AzurePlayground.Generator
             return Task.CompletedTask;
         }
 
-        private async Task<string> GetAccessToken()
+        private string GetAccessToken()
         {
             var client = new HttpClient();
 
@@ -127,27 +142,38 @@ namespace AzurePlayground.Generator
                 Address = _configuration.Identity
             };
 
-            var disco = await client.GetDiscoveryDocumentAsync(request);
 
-            if (disco.IsError) throw new Exception(disco.Error);
+            return Policy
+                .Handle<Exception>()
+                .WaitAndRetryForever(
+                     attempt => TimeSpan.FromMilliseconds(10000),
+                     (ex, timespan) => this.LogError($"Failed to reach auth server {_configuration.Identity} - [{ex.Message}]"))
+                .Execute(() =>
+               {
 
-            var accessToken = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
-            {
-                Address = disco.TokenEndpoint,
-                ClientId = AzurePlaygroundConstants.Auth.ClientReferenceToken,
-                ClientSecret = _configuration.Key,
-                Scope = AzurePlaygroundConstants.Api.Trade,
-                UserName = "bob.woodworth",
-                Password = "bob"
-            });
+                   var disco = client.GetDiscoveryDocumentAsync(request).Result;
+
+                   if (disco.IsError) throw new Exception(disco.Error);
+
+                   var accessToken = client.RequestPasswordTokenAsync(new PasswordTokenRequest
+                   {
+                       Address = disco.TokenEndpoint,
+                       ClientId = AzurePlaygroundConstants.Auth.ClientReferenceToken,
+                       ClientSecret = _configuration.Key,
+                       Scope = AzurePlaygroundConstants.Api.Trade,
+                       UserName = "bob.woodworth",
+                       Password = "bob"
+                   }).Result;
 
 
-            if (accessToken.IsError)
-            {
-                throw new Exception("Failed to acquire token", accessToken.Exception);
-            }
+                   if (accessToken.IsError)
+                   {
+                       throw new Exception("Failed to acquire token", accessToken.Exception);
+                   }
 
-            return accessToken.AccessToken;
+                   return accessToken.AccessToken;
+
+               });
         }
     }
 }

@@ -16,11 +16,11 @@ namespace AzurePlayground.Service.Shared
         }
     }
 
-    public interface IPrice : ICachedRessource
+    public interface IPrice
     {
-        Guid Id { get; }
-        DateTime Date { get; }
-        String Asset { get; }
-        double Value { get; }
+        Guid Id { get; set; }
+        DateTime Date { get; set; }
+        String Asset { get; set; }
+        double Value { get; set; }
     }
 }

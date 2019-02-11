@@ -65,7 +65,7 @@ namespace AzurePlayground.Authentication
 
             services.AddSwagger(ServiceConfiguration);
 
-            var jsonSettings = new ServiceJsonSerializerSettings();
+            var jsonSettings = new TradeServiceJsonSerializerSettings();
 
             services.AddMvc()
                 .RegisterJsonSettings(jsonSettings)

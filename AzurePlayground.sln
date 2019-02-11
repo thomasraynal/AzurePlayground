@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Trade.Event.Service", "AzurePlayground.Trade.Event.Service\AzurePlayground.Trade.Event.Service.csproj", "{09885EB1-16E1-4C2E-92C1-1DD29221E517}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Price.Service", "AzurePlayground.Price.Service\AzurePlayground.Price.Service.csproj", "{4828FFD2-8768-4143-A2F9-4345518BD437}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Trade.Service.Shared", "AzurePlayground.Trade.Service.Shared\AzurePlayground.Trade.Service.Shared.csproj", "{65C6C78F-A8C2-4FC1-81C9-D2592FC29A31}"
@@ -33,11 +31,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Events.Even
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Gateway", "AzurePlayground.Gateway\AzurePlayground.Gateway.csproj", "{088CBE64-3F17-4B50-896B-62542D4773B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Market.Service", "AzurePlayground.Market.Service\AzurePlayground.Market.Service.csproj", "{930386BF-390B-4BCD-BDB8-EC98B1C200C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Market.Service", "AzurePlayground.Market.Service\AzurePlayground.Market.Service.csproj", "{930386BF-390B-4BCD-BDB8-EC98B1C200C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Compliance.Service", "AzurePlayground.Compliance.Service\AzurePlayground.Compliance.Service.csproj", "{CB26EEDF-6D35-4B26-A85F-7F858A89168C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Compliance.Service", "AzurePlayground.Compliance.Service\AzurePlayground.Compliance.Service.csproj", "{CB26EEDF-6D35-4B26-A85F-7F858A89168C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Trade.Generator", "AzurePlayground.Trade.Generator\AzurePlayground.Trade.Generator.csproj", "{8BFEE555-68FC-448E-A8A2-6AD9211F7435}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Trade.Generator", "AzurePlayground.Trade.Generator\AzurePlayground.Trade.Generator.csproj", "{8BFEE555-68FC-448E-A8A2-6AD9211F7435}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +43,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{09885EB1-16E1-4C2E-92C1-1DD29221E517}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09885EB1-16E1-4C2E-92C1-1DD29221E517}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09885EB1-16E1-4C2E-92C1-1DD29221E517}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09885EB1-16E1-4C2E-92C1-1DD29221E517}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4828FFD2-8768-4143-A2F9-4345518BD437}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4828FFD2-8768-4143-A2F9-4345518BD437}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4828FFD2-8768-4143-A2F9-4345518BD437}.Release|Any CPU.ActiveCfg = Release|Any CPU

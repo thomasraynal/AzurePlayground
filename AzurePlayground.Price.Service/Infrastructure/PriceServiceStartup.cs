@@ -5,6 +5,7 @@ using Dasein.Core.Lite.Hosting;
 using Dasein.Core.Lite.Shared;
 using FluentValidation.AspNetCore;
 using GraphQL;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using StructureMap;
 using System;
@@ -34,59 +36,39 @@ namespace AzurePlayground.Service.Infrastructure
                 scanner.ConnectImplementationsToTypesClosing(typeof(IServiceProxy<>)).OnAddedPluginTypes(p => p.Singleton());
             });
 
-            this.For<IPublisher>().Use<PricePublisher>().Singleton();
-            this.RegisterCacheProxy<IPriceService, PriceService>();
+            this.RegisterService<IPriceService, PriceService>();
 
         }
     }
 
     public class PriceServiceStartup : ServiceStartupBase<PriceServiceConfiguration>
     {
-        public PriceServiceStartup(IHostingEnvironment env, IConfiguration configuration) : base(env, configuration)
+        public PriceServiceStartup(Microsoft.AspNetCore.Hosting.IHostingEnvironment env, IConfiguration configuration) : base(env, configuration)
         {
         }
 
         protected override void ConfigureServicesInternal(IServiceCollection services)
         {
             services.AddSerilog(Configuration);
+
             services.AddSingleton<IHubConfiguration>(ServiceConfiguration);
             services.AddSingleton<IHubContextHolder<Price>, HubContextHolder<Price>>();
             services.AddSingleton<ICacheStrategy<MethodCacheObject>, DefaultCacheStrategy<MethodCacheObject>>();
             services.AddSingleton<ICacheStrategy<ResponseCacheEntry>, DefaultCacheStrategy<ResponseCacheEntry>>();
             services.AddTransient<IAuthorizationHandler, ClaimRequirementHandler>();
-            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
-            services.AddSingleton<IMemoryCache, ResponseMemoryCache>();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
-                    {
-                        var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ServiceConfiguration.Key));
+            services.AddSingleton<IHostedService, PricePublisher>();
 
-                        options.TokenValidationParameters = new TokenValidationParameters()
-                        {
-                            IssuerSigningKey = secret,
-                            ValidIssuer = ServiceConfiguration.Name,
-                            ValidateIssuer = true,
-                            ValidateLifetime = true,
-                            ValidateActor = false,
-                            ValidateAudience = false,
-                        };
+            services.AddConsulRegistration(ServiceConfiguration);
 
-                        options.Events = new JwtBearerEvents()
-                        {
-                            OnAuthenticationFailed = context =>
-                            {
-                                throw new UnauthorizedUserException($"Failed to authenticate user [{context.Exception.Message}]");
-                            }
-                        };
-                    });
+            services.AddSwagger(ServiceConfiguration);
 
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(TradeServiceReferential.TraderUserPolicy, policy => policy.Requirements.Add(new ClaimRequirement(ClaimTypes.Role, TradeServiceReferential.TraderClaimValue)));
             });
 
-            var jsonSettings = new ServiceJsonSerializerSettings();
+            var jsonSettings = new TradeServiceJsonSerializerSettings();
 
             services
                     .AddSignalR(hubOptions =>
@@ -99,38 +81,37 @@ namespace AzurePlayground.Service.Infrastructure
                         options.PayloadSerializerSettings = jsonSettings;
                     });
 
-            services.AddResponseCaching();
-
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(ValidateModelStateAttribute));
             })
                     .RegisterJsonSettings(jsonSettings)
                     .AddFluentValidation(config => config.RegisterValidatorsFromAssemblies((assembly) => assembly.FullName.Contains("AzurePlayground.Service")));
-        }
 
-        protected override void OnApplicationStart()
-        {
-            Task.Delay(500).Wait();
 
-            var publishers = AppCore.Instance.GetAll<IPublisher>();
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                    .AddIdentityServerAuthentication(options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.Authority = ServiceConfiguration.Identity;
+                        options.ApiName = AzurePlaygroundConstants.Api.Trade;
+                        options.ApiSecret = ServiceConfiguration.Key;
+                    });
 
-            foreach (var publisher in publishers)
-            {
-                publisher.Start().Wait();
-            }
         }
 
         protected override void ConfigureInternal(IApplicationBuilder app)
         {
+            app.UseSwagger(ServiceConfiguration);
+
             app.UseAuthentication();
+
+            app.UseConsulRegistration();
 
             app.UseSignalR(routes =>
             {
                 routes.MapHub<PriceHub>("/hub/price");
             });
-
-            app.UseResponseCaching();
 
             app.UseMvc();
         }

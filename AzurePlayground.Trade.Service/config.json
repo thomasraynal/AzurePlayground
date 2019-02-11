@@ -22,9 +22,9 @@
       }
 
     ],
-    "name": "trades",
+    "name": "trade",
     "version": "1",
-    "consult": "http://localhost:8500",
+    "consul": "http://localhost:8500",
     "identity": "http://localhost:5001",
     "eventstore": "tcp://admin:changeit@localhost:1113",
     "key": "AQMZwz4588oyWcIxdDDLf"

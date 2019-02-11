@@ -4,6 +4,8 @@ using AzurePlayground.EventStore.Infrastructure;
 using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite.Shared;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Refit;
 using System;
 using System.Linq;
 using System.Reactive.Concurrency;
@@ -18,12 +20,25 @@ namespace AzurePlayground.Service
         private readonly IEventStoreRepository _repository;
         private readonly MarketServiceConfiguration _configuration;
         private IDisposable _cleanup;
+        private IPriceService _priceService;
 
         public MarketService(IEventStoreRepository repository, MarketServiceConfiguration configuration, IEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>> cache)
         {
             _cache = cache;
             _repository = repository;
             _configuration = configuration;
+
+            var settings = AppCore.Instance.Get<JsonSerializerSettings>();
+
+            var refitSettings = new RefitSettings()
+            {
+                JsonSerializerSettings = settings,
+                HttpMessageHandlerFactory = () => new HttpRetryForeverMessageHandler(5000)
+            };
+
+            _priceService = ApiServiceBuilder<IPriceService>
+                                    .Build(configuration.Gateway)
+                                    .Create(refitSettings: refitSettings);
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -36,13 +51,12 @@ namespace AzurePlayground.Service
 
                               var relevantChanges = obs.Trades.Where(trade => trade.Status == TradeStatus.Created);
 
-                              foreach (var change in relevantChanges)
+                              foreach (var change in relevantChanges)   
                               {
                                   Scheduler.Default.Schedule(async () =>
                                   {
                                       try
                                       {
-
                                           var trade = await _repository.GetById<Trade>(change.Id);
 
                                           if (TradeServiceReferential.Rand.Next(1, 10) == 1)
@@ -59,7 +73,8 @@ namespace AzurePlayground.Service
                                           {
 
                                               var counterparty = TradeServiceReferential.Counterparties.Random();
-                                              var price = TradeServiceReferential.Assets.FirstOrDefault(asset => asset.Name == trade.Asset).Price;
+
+                                              var price = await _priceService.GetPrice(change.Asset);
 
                                               if (counterparty == TradeServiceReferential.HighLatencyCounterparty)
                                               {
@@ -74,7 +89,7 @@ namespace AzurePlayground.Service
                                               {
                                                   EntityId = trade.Id,
                                                   Counterparty = counterparty,
-                                                  Price = price,
+                                                  Price = price.Value,
                                                   Date = DateTime.Now,
                                                   MarketService = _configuration.Id,
                                                   Marketplace = TradeServiceReferential.Markets.Random().Name,
@@ -105,5 +120,6 @@ namespace AzurePlayground.Service
 
             return Task.CompletedTask;
         }
+        
     }
 }

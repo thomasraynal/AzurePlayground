@@ -7,35 +7,29 @@ namespace AzurePlayground.Service.Shared
 
     public class Price : IPrice
     {
-        private readonly Guid _id;
-        private readonly DateTime _date;
-        private readonly string _asset;
-        private readonly double _value;
+        public Price()
+        {
+        }
 
         public Price(Guid id, string asset, double value, DateTime date)
         {
-            _id = id;
-            _date = date;
-            _asset = asset;
-            _value = value;
+            Id = id;
+            Asset = asset;
+            Value = value;
+            Date = date;
         }
 
-        public Guid Id => _id;
+        public Guid Id { get; set; }
 
-        public DateTime Date => _date;
+        public DateTime Date { get; set; }
 
-        public string Asset => _asset;
+        public string Asset { get; set; }
 
-        public double Value => _value;
+        public double Value { get; set; }
 
-        public IEnumerable<string> GetCacheInvalidationTags()
+        public override string ToString()
         {
-            yield return _asset;
-        }
-
-        public int GetCacheKey()
-        {
-            return _asset.GetHashCode();
+            return $"{Asset} - {Date.ToShortDateString()} - {Value}";
         }
     }
 }

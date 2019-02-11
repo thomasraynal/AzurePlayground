@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Polly;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -39,7 +41,7 @@ namespace AzurePlayground.Persistence
 
         private static void SeedInternal<TEntity>(IRepository repository, IEnumerable<TEntity> entities, bool forceClear = true) where TEntity : class, new()
         {
-            if (forceClear || null!= entities)
+            if (forceClear || null != entities)
             {
                 repository.ClearTable<TEntity>();
             }
@@ -49,21 +51,30 @@ namespace AzurePlayground.Persistence
                 repository.Add(entities);
             }
         }
-    
-        public static void SeedIdentityServer(this IApplicationBuilder app, 
-            IEnumerable<Client> clients = null, 
+
+        public static void SeedIdentityServer(this IApplicationBuilder app,
+            IEnumerable<Client> clients = null,
             IEnumerable<ApiResource> apiRessources = null,
             IEnumerable<IdentityResource> identityRessources = null,
             IEnumerable<PersistedGrant> persistedGrants = null)
         {
+            var logger = app.ApplicationServices.GetService<ILogger>();
 
-            var repository = app.ApplicationServices.GetService<IRepository>();
+            Policy
+               .Handle<Exception>()
+               .WaitAndRetryForever(
+                    attempt => TimeSpan.FromMilliseconds(5000),
+                    (ex, timespan) => logger.LogError($"Failed to auth db - [{ex.Message}]"))
+                .Execute(() =>
+                {
+                    var repository = app.ApplicationServices.GetService<IRepository>();
 
-            SeedInternal(repository, clients);
-            SeedInternal(repository, apiRessources);
-            SeedInternal(repository, identityRessources);
-            SeedInternal(repository, persistedGrants);
+                    SeedInternal(repository, clients);
+                    SeedInternal(repository, apiRessources);
+                    SeedInternal(repository, identityRessources);
+                    SeedInternal(repository, persistedGrants);
 
+                });
         }
     }
 }

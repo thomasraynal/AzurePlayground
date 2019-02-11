@@ -38,7 +38,7 @@ namespace AzurePlayground.Web.App
             services.AddSerilog(Configuration);
             services.AddSingleton<ICacheStrategy<MethodCacheObject>, DefaultCacheStrategy<MethodCacheObject>>();
 
-            var jsonSettings = new TradeServiceJsonSerializer();
+            var jsonSettings = new TradeServiceJsonSerializerSettings();
 
             services.AddMvc()
                     .RegisterJsonSettings(jsonSettings);

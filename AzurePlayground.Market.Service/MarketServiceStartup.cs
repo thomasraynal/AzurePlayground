@@ -65,7 +65,7 @@ namespace AzurePlayground.Service
                 options.AddPolicy(TradeServiceReferential.TraderUserPolicy, policy => policy.Requirements.Add(new ClaimRequirement(ClaimTypes.Role, TradeServiceReferential.TraderClaimValue)));
             });
 
-            var jsonSettings = new ServiceJsonSerializerSettings();
+            var jsonSettings = new TradeServiceJsonSerializerSettings();
 
             services
                     .AddSignalR(hubOptions =>
