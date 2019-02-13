@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Trade.Servi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Authentication", "AzurePlayground.Authentication\AzurePlayground.Authentication.csproj", "{D9D32CEF-4DD0-421D-AB8F-1CE68050E615}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dasein.Core.Lite", "Modules\Dasein.Core.Lite\Dasein.Core.Lite\Dasein.Core.Lite.csproj", "{1DDA0B45-4E93-43C2-A026-031E90038A03}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dasein.Core.Lite.Shared", "Modules\Dasein.Core.Lite\Dasein.Core.Lite.Shared\Dasein.Core.Lite.Shared.csproj", "{EEAFB333-A35F-4083-A25E-D98986675C03}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Wpf.App", "AzurePlayground.Wpf.App\AzurePlayground.Wpf.App.csproj", "{401C5F9D-41CE-4767-8F87-3E6B7E80734E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Authentication.Shared", "AzurePlayground.Authentication.Shared\AzurePlayground.Authentication.Shared.csproj", "{71E39650-266F-4A42-965D-DCBE11470094}"

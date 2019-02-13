@@ -1,0 +1,4 @@
+[submodule "Modules/Dasein.Core.Lite"]
+	path = Modules/Dasein.Core.Lite
+	url = https://github.com/thomasraynal/Dasein.Core.Lite.git
+	branch = master
