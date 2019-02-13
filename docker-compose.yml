@@ -3,10 +3,13 @@ version: '3.4'
 services:
 
   mongo:
-    image: 'bitnami/mongodb:latest'
+    image: 'mongo:latest'
     container_name: mongo
     ports:
       - "27017:27017"
+    environment:
+       - MONGO_INITDB_ROOT_USERNAME=admin
+       - MONGO_INITDB_ROOT_PASSWORD=changeit
 
   eventstore:
     image: 'eventstore/eventstore:latest'
@@ -20,126 +23,139 @@ services:
     container_name: consul
     ports:
       - "8500:8500"
-    expose:
-      - "8500"
 
   authentication:
-    image: ${DOCKER_REGISTRY-}azureplaygroundauthentication
+    image: ${DOCKER_REGISTRY-azureplayground.azurecr.io}/azureplayground.authentication:${VERSION_TAG:-latest}
     build: 
-      context: ./AzurePlayground.Authentication
-    restart: always
+      context: .
+      dockerfile: ./AzurePlayground.Authentication/Dockerfile
     container_name: authentication
-    ports:
-      - "5001:5001"
     depends_on:
       - mongo
     environment:
-      - ASPNETCORE_URLS=http://*:5001
-      - serviceConfiguration:mongoConnectionString=mongodb://mongo:27017
-      - serviceConfiguration:mongoDatabase=playground
-      - serviceConfiguration:identity=http://authentication:5001
+      - serviceConfiguration:mongoConnectionString=${AZUREPLAYGROUND_MONGO_CONNECTION_STRING}
+      - serviceConfiguration:identity=${AZUREPLAYGROUND_AUTHENTICATION_URL}
+      - ASPNETCORE_URLS=http://0.0.0.0:80;https://0.0.0.0:443
 
   gateway:
-    image: ${DOCKER_REGISTRY-}azureplaygroundgateway
-    build: 
-      context: ./AzurePlayground.Gateway
+    image: ${DOCKER_REGISTRY-azureplayground.azurecr.io}/azureplayground.gateway:${VERSION_TAG:-latest}
+    build:
+      context: .
+      dockerfile: ./AzurePlayground.Gateway/Dockerfile
     container_name: gateway
-    ports:
-      - "5003:5003"
     depends_on:
       - consul
       - eventstore
       - authentication
     environment:
-      - ASPNETCORE_URLS=http://*:5003
-      - GlobalConfiguration.RequestIdKey:OcRequestId
+      - GlobalConfiguration:RequestIdKey=OcRequestId
       - GlobalConfiguration:ServiceDiscoveryProvider:Host=consul
       - GlobalConfiguration:ServiceDiscoveryProvider:Port=8500
       - GlobalConfiguration:ServiceDiscoveryProvider:Type=Consul
+      - ASPNETCORE_URLS=http://0.0.0.0:80;https://0.0.0.0:443
 
   app:
-    image: ${DOCKER_REGISTRY-}azureplaygroundwebapp
-    build: 
-      context: ./AzurePlayground.Web.App
+    image: ${DOCKER_REGISTRY-azureplayground.azurecr.io}/azureplayground.web.app:${VERSION_TAG:-latest}
+    build:
+      context: .
+      dockerfile: ./AzurePlayground.Web.App/Dockerfile
     container_name: app
-    depends_on:
-      - gateway
-    ports:
-      - "5002:5002"
     environment:
-      - ASPNETCORE_URLS=http://*:5002
-      - serviceConfiguration:gateway=http://gateway:5003
-      - serviceConfiguration:identity=http://authentication:5001
+      - ASPNETCORE_URLS=http://0.0.0.0:80;https://0.0.0.0:443
+      - serviceConfiguration:gateway=${AZUREPLAYGROUND_GATEWAY_URL}
+      - serviceConfiguration:identity=${AZUREPLAYGROUND_AUTHENTICATION_URL}
 
   compliance:
-    image: ${DOCKER_REGISTRY-}azureplaygroundcomplianceservice
-    build: 
-      context: ./AzurePlayground.Compliance.Service
+    image: ${DOCKER_REGISTRY-azureplayground.azurecr.io}/azureplayground.compliance.service:${VERSION_TAG:-latest}
+    build:
+      context: .
+      dockerfile: ./AzurePlayground.Compliance.Service/Dockerfile
     container_name: compliance
-    ports:
-      - "5006:5006"    depends_on:
-      - gateway    environment:
-      - ASPNETCORE_URLS=http://*:5006
-      - serviceConfiguration:identity=http://authentication:5001
-      - serviceConfiguration:consul=http://consul:8500
-      - serviceConfiguration:eventstore=tcp://admin:changeit@eventstore:1113
-      - serviceConfiguration:id=compliance1
+    depends_on:
+      - gateway
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:80;https://0.0.0.0:443
+      - serviceConfiguration:identity=${AZUREPLAYGROUND_AUTHENTICATION_URL}
+      - serviceConfiguration:consul=${AZUREPLAYGROUND_CONSUL_URL}
+      - serviceConfiguration:eventstore=${AZUREPLAYGROUND_EVENTSTORE_CONNECTION_STRING}
+      - serviceConfiguration:id=compliance
 
   market:
-    image: ${DOCKER_REGISTRY-}azureplaygroundmarketservice
+    image: ${DOCKER_REGISTRY-azureplayground.azurecr.io}/azureplayground.market.service:${VERSION_TAG:-latest}
     build: 
-      context: ./AzurePlayground.Market.Service
+      context: .
+      dockerfile: ./AzurePlayground.Market.Service/Dockerfile
     container_name: market
-    ports:
-      - "5005:5005"    expose:
-      - "5005"    depends_on:
-      - gateway    environment:
-      - ASPNETCORE_URLS=http://*:5005
-      - serviceConfiguration:gateway=http://gateway:5003
-      - serviceConfiguration:identity=http://authentication:5001
-      - serviceConfiguration:consul=http://consul:8500
-      - serviceConfiguration:eventstore=tcp://admin:changeit@eventstore:1113
-      - serviceConfiguration:id=market1
+    depends_on:
+      - gateway
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:80;https://0.0.0.0:443
+      - serviceConfiguration:gateway=${AZUREPLAYGROUND_GATEWAY_URL}
+      - serviceConfiguration:identity=${AZUREPLAYGROUND_AUTHENTICATION_URL}
+      - serviceConfiguration:consul=${AZUREPLAYGROUND_CONSUL_URL}
+      - serviceConfiguration:eventstore=${AZUREPLAYGROUND_EVENTSTORE_CONNECTION_STRING}
+      - serviceConfiguration:id=market
 
   trade:
-    image: ${DOCKER_REGISTRY-}azureplaygroundtradeservice
-    build: 
-      context: ./AzurePlayground.Trade.Service
+    image: ${DOCKER_REGISTRY-azureplayground.azurecr.io}/azureplayground.trade.service:${VERSION_TAG:-latest}
+    build:
+      context: .
+      dockerfile: ./AzurePlayground.Trade.Service/Dockerfile
     container_name: trade
-    ports:
-      - "5004:5004"    expose:
-      - "5004"    depends_on:
-      - gateway    environment:
-      - ASPNETCORE_URLS=http://*:5004
-      - serviceConfiguration:identity=http://authentication:5001
-      - serviceConfiguration:consul=http://consul:8500
-      - serviceConfiguration:eventstore=tcp://admin:changeit@eventstore:1113
-      - serviceConfiguration:id=trade1
+    depends_on:
+      - gateway
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:80;https://0.0.0.0:443
+      - serviceConfiguration:identity=${AZUREPLAYGROUND_AUTHENTICATION_URL}
+      - serviceConfiguration:consul=${AZUREPLAYGROUND_CONSUL_URL}
+      - serviceConfiguration:eventstore=${AZUREPLAYGROUND_EVENTSTORE_CONNECTION_STRING}
+      - serviceConfiguration:id=trade
 
   price:
-    image: ${DOCKER_REGISTRY-}azureplaygroundpriceservice
+    image: ${DOCKER_REGISTRY-azureplayground.azurecr.io}/azureplayground.price.service:${VERSION_TAG:-latest}
     build: 
-      context: ./AzurePlayground.Price.Service
+      context: .
+      dockerfile: ./AzurePlayground.Price.Service/Dockerfile
     container_name: price
-    ports:
-      - "5009:5009"    expose:
-      - "5009"    depends_on:
-      - gateway    environment:
-      - ASPNETCORE_URLS=http://*:5009
-      - serviceConfiguration:identity=http://authentication:5001
-      - serviceConfiguration:consul=http://consul:8500
-      - serviceConfiguration:id=price1
+    depends_on:
+      - gateway
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:80;https://0.0.0.0:443
+      - serviceConfiguration:identity=${AZUREPLAYGROUND_AUTHENTICATION_URL}
+      - serviceConfiguration:consul=${AZUREPLAYGROUND_CONSUL_URL}
+      - serviceConfiguration:hubs=${AZUREPLAYGROUND_PRICE_HUBS}
+      - serviceConfiguration:id=price
+
+  event:
+    image: ${DOCKER_REGISTRY-azureplayground.azurecr.io}/azureplayground.trade.event.service:${VERSION_TAG:-latest}
+    build: 
+      context: .
+      dockerfile: ./AzurePlayground.Trade.Event.Service/Dockerfile
+    container_name: event
+    depends_on:
+      - gateway
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:80;https://0.0.0.0:443
+      - serviceConfiguration:identity=${AZUREPLAYGROUND_AUTHENTICATION_URL}
+      - serviceConfiguration:consul=${AZUREPLAYGROUND_CONSUL_URL}
+      - serviceConfiguration:eventstore=${AZUREPLAYGROUND_EVENTSTORE_CONNECTION_STRING}
+      - serviceConfiguration:hubs=${AZUREPLAYGROUND_TRADE_EVENT_HUBS}
+      - serviceConfiguration:id=event
 
   generator:
-    image: ${DOCKER_REGISTRY-}azureplaygroundtradegenerator
+    image: ${DOCKER_REGISTRY-azureplayground.azurecr.io}/azureplayground.trade.generator:${VERSION_TAG:-latest}
     build: 
-      context: ./AzurePlayground.Trade.Generator
-    container_name: generator    depends_on:
-      - trade      - market      - compliance    environment:
-      - ASPNETCORE_URLS=http://*:5005
-      - serviceConfiguration:gateway=http://gateway:5003
-      - serviceConfiguration:identity=http://authentication:5001
-      - serviceConfiguration:eventstore=tcp://admin:changeit@eventstore:1113
+     context: .
+     dockerfile: ./AzurePlayground.Trade.Generator/Dockerfile
+    container_name: generator
+    depends_on:
+      - trade
+      - market
+      - compliance
+    environment:
+      - serviceConfiguration:gateway=${AZUREPLAYGROUND_GATEWAY_URL}
+      - serviceConfiguration:identity=${AZUREPLAYGROUND_AUTHENTICATION_URL}
+      - serviceConfiguration:eventstore=${AZUREPLAYGROUND_EVENTSTORE_CONNECTION_STRING}
 
 
 

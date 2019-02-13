@@ -25,7 +25,6 @@ namespace AzurePlayground.Generator
     public class TradeGenerator : IHostedService, ICanLog
     {
         private ITradeService _tradeService;
-        private string _token;
         private TradeGeneratorConfiguration _configuration;
         private IEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>> _cache;
         private IEventStoreRepository _repository;
@@ -42,34 +41,27 @@ namespace AzurePlayground.Generator
             _cleanup = new CompositeDisposable();
 
             var settings = AppCore.Instance.Get<JsonSerializerSettings>();
-
+            
             var refitSettings = new RefitSettings()
             {
                 JsonSerializerSettings = settings,
                 HttpMessageHandlerFactory = () => new HttpRetryForeverMessageHandler(5000)
             };
 
+            var accessTokenRetrieverFactory = new AccessTokenRetrieverFactory();
+
             _tradeService = ApiServiceBuilder<ITradeService>
                                     .Build(configuration.Gateway)
-                                    .AddAuthorizationHeader(() =>
-                                    {
-
-                                        var jwttoken = _jwthandler.ReadToken(_token);
-
-                                        if (jwttoken.ValidTo <= DateTime.Now)
-                                        {
-                                            _token = GetAccessToken();
-                                        }
-
-                                        return _token;
-                                    })
+                                    .AddAuthorizationHeader(accessTokenRetrieverFactory.GetToken(
+                                        "bob.woodworth",
+                                        "bob",
+                                        _configuration.Identity,
+                                        AzurePlaygroundConstants.Auth.ClientReferenceToken,
+                                        AzurePlaygroundConstants.Api.Trade,
+                                       _configuration.Key
+                                      
+                                    ))
                                     .Create(refitSettings: refitSettings);
-
-
-      
-            _token = GetAccessToken();
-
-
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -126,54 +118,5 @@ namespace AzurePlayground.Generator
             return Task.CompletedTask;
         }
 
-        private string GetAccessToken()
-        {
-            var client = new HttpClient();
-
-            var request = new DiscoveryDocumentRequest()
-            {
-                Policy =
-                        {
-                            RequireHttps = false,
-                            RequireKeySet = false,
-                            ValidateEndpoints = false,
-                            ValidateIssuerName = false,
-                        },
-                Address = _configuration.Identity
-            };
-
-
-            return Policy
-                .Handle<Exception>()
-                .WaitAndRetryForever(
-                     attempt => TimeSpan.FromMilliseconds(10000),
-                     (ex, timespan) => this.LogError($"Failed to reach auth server {_configuration.Identity} - [{ex.Message}]"))
-                .Execute(() =>
-               {
-
-                   var disco = client.GetDiscoveryDocumentAsync(request).Result;
-
-                   if (disco.IsError) throw new Exception(disco.Error);
-
-                   var accessToken = client.RequestPasswordTokenAsync(new PasswordTokenRequest
-                   {
-                       Address = disco.TokenEndpoint,
-                       ClientId = AzurePlaygroundConstants.Auth.ClientReferenceToken,
-                       ClientSecret = _configuration.Key,
-                       Scope = AzurePlaygroundConstants.Api.Trade,
-                       UserName = "bob.woodworth",
-                       Password = "bob"
-                   }).Result;
-
-
-                   if (accessToken.IsError)
-                   {
-                       throw new Exception("Failed to acquire token", accessToken.Exception);
-                   }
-
-                   return accessToken.AccessToken;
-
-               });
-        }
     }
 }

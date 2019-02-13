@@ -1,5 +1,6 @@
 ﻿using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,17 +8,15 @@ using System.Threading.Tasks;
 
 namespace AzurePlayground.Service.Domain
 {
-    public class TradeEventHub : HubBase<TradeEvent>
+
+    [Authorize]
+    public class TradeEventHub : HubBase<Trade>
     {
-        public TradeEventHub(IHubContextHolder<TradeEvent> context) : base(context)
+        public TradeEventHub(IHubContextHolder<Trade> context) : base(context)
         {
         }
 
         public override string Name => nameof(TradeEventHub);
 
-        public async Task RaiseTradeEvent(TradeEvent @event)
-        {
-            await RaiseChange(@event, TradeServiceReferential.OnTradeEvent);
-        }
     }
 }

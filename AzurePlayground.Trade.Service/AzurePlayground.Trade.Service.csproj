@@ -8,12 +8,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\**" />
+    <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="wwwroot\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.1.3" />
     <PackageReference Include="IdentityServer4" Version="2.3.2" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="3.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.1.0" />
@@ -36,7 +44,58 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <Folder Include="certs\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="..\certs\app.crt" Link="certs\app.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\app.pfx" Link="certs\app.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\authentication.crt" Link="certs\authentication.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\authentication.pfx" Link="certs\authentication.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\compliance.crt" Link="certs\compliance.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\compliance.pfx" Link="certs\compliance.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\event.crt" Link="certs\event.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\event.pfx" Link="certs\event.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\gateway.crt" Link="certs\gateway.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\gateway.pfx" Link="certs\gateway.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\market.crt" Link="certs\market.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\market.pfx" Link="certs\market.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\price.crt" Link="certs\price.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\price.pfx" Link="certs\price.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\trade.crt" Link="certs\trade.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\certs\trade.pfx" Link="certs\trade.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

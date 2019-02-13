@@ -16,6 +16,8 @@ namespace AzurePlayground.Service
         [ProducesResponseType(typeof(TradeCreationResult), (int)HttpStatusCode.Created)]
         public async Task<ActionResult<TradeCreationResult>> CreateTrade([FromBody] TradeCreationRequest request)
         {
+            request.Trader = HttpContext.User.Identity.Name;
+
             var tradeResult = await Service.CreateTrade(request);
             return CreatedAtAction(nameof(GetTradeById), new { tradeId = tradeResult.TradeId }, tradeResult);
         }

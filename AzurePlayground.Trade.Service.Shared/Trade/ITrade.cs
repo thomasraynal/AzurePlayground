@@ -30,8 +30,7 @@ namespace AzurePlayground.Service.Shared
         double Price { get; set; }
         String Currency { get; set; }
         double Volume { get; set; }
-
-         
+        string Trader { get; set; }
 
         String TradeService { get; set; }
         String ComplianceService { get; set; }

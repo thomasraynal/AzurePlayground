@@ -7,6 +7,7 @@
     <title>@ViewData["Title"] - MvcClient</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -40,9 +41,9 @@
         <script src="~/js/site.js" asp-append-version="true"></script>
         <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js "></script>
-
+        
     </environment>
-    <environment names="Staging,Production">
+    @*<environment names="Staging,Production">
         <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
                 asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
                 asp-fallback-test="window.jQuery">
@@ -52,7 +53,8 @@
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
-    </environment>
+    </environment>*@
+
     @RenderSection("scripts", required: false)
 
     <div class="container body-content">

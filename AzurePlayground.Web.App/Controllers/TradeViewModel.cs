@@ -20,6 +20,7 @@ namespace AzurePlayground.Web.App
             Way = trade.Way;
             Price = trade.Price;
             Volume = trade.Volume;
+            Trader = trade.Trader;
             TradeService = trade.TradeService;
             ComplianceService = trade.ComplianceService;
 
@@ -45,7 +46,7 @@ namespace AzurePlayground.Web.App
 
         public double Volume { get; set; }
 
-        public double CurrentPrice { get; set; }
+        public string Trader { get; set; }
 
         public string TradeService { get; set; }
         public string ComplianceService { get; set; }

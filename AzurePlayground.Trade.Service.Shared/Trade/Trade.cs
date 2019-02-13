@@ -47,6 +47,8 @@ namespace AzurePlayground.Service.Shared
 
         public double Volume { get; set; }
 
+        public String Trader { get; set; }
+
         public override object Identifier => Id;
 
         public string MarketService { get; set; }

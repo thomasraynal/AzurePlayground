@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,8 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Polly;
-using Polly.Extensions.Http;
-using Polly.Retry;
 
 namespace AzurePlayground.Service.Shared
 {
@@ -81,24 +78,25 @@ namespace AzurePlayground.Service.Shared
         {
             _cancellationTokens = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-            var features = _server.Features;
-            var addresses = features.Get<IServerAddressesFeature>();
-            var address = addresses.Addresses.First();
+            var address = _server.Features.Get<IServerAddressesFeature>().Addresses.First();
             var uri = new Uri(address);
 
             Uri hostUri = null;
 
-            #if DEBUG
+#if DEBUG
+            //if run on dev machine, use provided hosturl
+            hostUri = uri;
 
-                        hostUri = uri;
+#elif COMPOSE
+              //if run via docker-compose, use the container id, resolved by docker cluster dns
+             hostUri = new Uri($"{uri.Scheme}://{_serviceConfiguration.Id}:{uri.Port}");
 
-            #else
+#else
+            //if run on kubernetes, use service name which is resolved by the cluster dns
+             hostUri = new Uri($"{uri.Scheme}://{_serviceConfiguration.Name}:{uri.Port}");
+#endif
 
-                            var name = Dns.GetHostName();
-                            var ip = Dns.GetHostEntry(name).AddressList.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork);
-                            hostUri = new Uri($"{uri.Scheme}://{name}:{uri.Port}");
 
-            #endif
 
             _registrationID = $"{_serviceConfiguration.Id}-{hostUri.Port}";
 
@@ -114,24 +112,24 @@ namespace AzurePlayground.Service.Shared
                             HTTP = $"{hostUri.Scheme}://{hostUri.Host}:{hostUri.Port}{ConsulRegistrationConstants.HealthCheckUrl}",
                             Notes = $"Checks {ConsulRegistrationConstants.HealthCheckUrl} on host",
                             Timeout = TimeSpan.FromSeconds(3),
+                            TLSSkipVerify = true,
                             Interval = TimeSpan.FromSeconds(10)
 
                         }
                     }
             };
+            
+            RetryPolicies.WaitAndRetryForever<Exception>(
+                attemptDelay: TimeSpan.FromMilliseconds(_retryTimeout),
+                onRetry: (ex, timespan) => this.LogError($"Failed to register {_serviceConfiguration.Id} [{hostUri}] in Consul [{_serviceConfiguration.Consul}] - [{ex.Message}]"),
+                doTry: () =>
+                  {
+                      this.LogInformation($"Try registering {_serviceConfiguration.Id} [{hostUri}] in Consul [{_serviceConfiguration.Consul}]");
 
-            Policy
-               .Handle<Exception>()
-               .WaitAndRetryForever(
-                    attempt => TimeSpan.FromMilliseconds(_retryTimeout),
-                    (ex, timespan) => this.LogError($"Failed to register {_serviceConfiguration.Id} [{hostUri}] in Consul [{_serviceConfiguration.Consul}] - [{ex.Message}]"))
-               .Execute(() =>
-               {
-                   this.LogInformation($"Try registering {_serviceConfiguration.Id} [{hostUri}] in Consul [{_serviceConfiguration.Consul}]");
-
-                   _consulClient.Agent.ServiceDeregister(registration.ID, _cancellationTokens.Token).Wait();
-                   _consulClient.Agent.ServiceRegister(registration, _cancellationTokens.Token).Wait();
-               });
+                      _consulClient.Agent.ServiceDeregister(registration.ID, _cancellationTokens.Token).Wait();
+                      _consulClient.Agent.ServiceRegister(registration, _cancellationTokens.Token).Wait();
+                  }
+                );
 
 
             this.LogInformation($"Registered {_serviceConfiguration.Id} [{hostUri}] in Consul [{_serviceConfiguration.Consul}]");

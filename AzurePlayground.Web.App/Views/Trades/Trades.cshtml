@@ -3,45 +3,59 @@
 @{
     ViewData["Title"] = "Trades";
 }
-<div>
+
+<div class="container-fluid" style="margin-top:15px" >
     <table class="table table-striped table-bordered table-hover" id="trades">
 
         <thead>
             <tr>
-                <th>CurrentPrice</th>
+                <th>Id</th>
                 <th>Date</th>
+                <th>Marketplace</th>
                 <th>Counterparty</th>
                 <th>Asset</th>
                 <th>Status</th>
                 <th>Way</th>
                 <th>Price</th>
+                <th>Currency</th>
                 <th>Volume</th>
+                <th>Trader</th>
+
+                <th>TradeService</th>
+                <th>ComplianceService</th>
 
             </tr>
         </thead>
     </table>
 
-
 </div>
+
 
 <script>
     $(document).ready(function () {
 
-        $('#trades').DataTable({
+        var table = $('#trades').DataTable({
             "data": @Html.Raw(@Model.Json),
             responsive: true,
+            scrollY: '50vh',
+            scrollCollapse: true,
+            paging: false,
             "columns": [
-                { "data": "currentPrice" },
+                { "data": "id" },
                 { "data": "date" },
+                { "data": "marketplace" },
                 { "data": "counterparty" },
                 { "data": "asset" },
                 { "data": "status" },
                 { "data": "way" },
                 { "data": "price" },
+                { "data": "currency" },
                 { "data": "volume" }
+                { "data": "trader" },
+                { "data": "tradeService" }
+                { "data": "complianceService" }
             ]
         });
-
     });
 
 </script>

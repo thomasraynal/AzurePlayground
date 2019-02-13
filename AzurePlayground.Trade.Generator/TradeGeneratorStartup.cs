@@ -48,13 +48,11 @@ namespace AzurePlayground.Generator
 
             services.AddSingleton<IHostedService, TradeGenerator>();
 
-            var jsonSettings = new TradeServiceJsonSerializerSettings();
-
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(ValidateModelStateAttribute));
             })
-                    .RegisterJsonSettings(jsonSettings)
+                    .RegisterJsonSettings(new TradeServiceJsonSerializerSettings())
                     .AddFluentValidation(config => config.RegisterValidatorsFromAssemblies((assembly) => assembly.FullName.Contains("AzurePlayground.Service")));
 
 

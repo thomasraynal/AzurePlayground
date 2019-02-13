@@ -1,23 +1,23 @@
-﻿using AzurePlayground.Service.Domain;
-using AzurePlayground.Service.Infrastructure;
+﻿using AzurePlayground.Events.EventStore;
+using AzurePlayground.EventStore;
+using AzurePlayground.EventStore.Infrastructure;
+using AzurePlayground.Service.Domain;
 using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite;
 using Dasein.Core.Lite.Hosting;
 using Dasein.Core.Lite.Shared;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Hosting;
 using StructureMap;
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 namespace AzurePlayground.Service.Infrastructure
 {
@@ -30,19 +30,22 @@ namespace AzurePlayground.Service.Infrastructure
                 scanner.AssembliesAndExecutablesFromApplicationBaseDirectory();
                 scanner.WithDefaultConventions();
                 scanner.ConnectImplementationsToTypesClosing(typeof(ISignalRService<,>));
+                scanner.ConnectImplementationsToTypesClosing(typeof(IMutable<,>));
+                scanner.AddAllTypesOf<IEvent>();
             });
         }
     }
 
     public class TradeEventServiceStartup : ServiceStartupBase<TradeEventServiceConfiguration>
     {
-        public TradeEventServiceStartup(IHostingEnvironment env, IConfiguration configuration) : base(env, configuration)
+        public TradeEventServiceStartup(Microsoft.AspNetCore.Hosting.IHostingEnvironment env, IConfiguration configuration) : base(env, configuration)
         {
         }
 
         protected override void ConfigureServicesInternal(IServiceCollection services)
         {
             services.AddSerilog(Configuration);
+
             services.AddSingleton<IHubConfiguration>(ServiceConfiguration);
             services.AddSingleton<IHubContextHolder<Trade>, HubContextHolder<Trade>>();
             services.AddSingleton<ICacheStrategy<MethodCacheObject>, DefaultCacheStrategy<MethodCacheObject>>();
@@ -50,36 +53,21 @@ namespace AzurePlayground.Service.Infrastructure
             services.AddTransient<IAuthorizationHandler, ClaimRequirementHandler>();
             services.AddSingleton<IMemoryCache, ResponseMemoryCache>();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
-                    {
-                        var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ServiceConfiguration.Key));
+            services.AddEventStore<EventStoreRepository>(ServiceConfiguration.EventStore)
+                    .AddEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>, TradeEventCache>();
 
-                        options.TokenValidationParameters = new TokenValidationParameters()
-                        {
-                            IssuerSigningKey = secret,
-                            ValidIssuer = ServiceConfiguration.Name,
-                            ValidateIssuer = true,
-                            ValidateLifetime = true,
-                            ValidateActor = false,
-                            ValidateAudience = false,
-                        };
+            services.AddSingleton<IHostedService, TradeEventListener>();
 
-                        options.Events = new JwtBearerEvents()
-                        {
-                            OnAuthenticationFailed = context =>
-                            {
-                                throw new UnauthorizedUserException($"Failed to authenticate user [{context.Exception.Message}]");
-                            }
-                        };
-                    });
+            services.AddConsulRegistration(ServiceConfiguration);
+
+            services.AddSwagger(ServiceConfiguration);
 
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(TradeServiceReferential.TraderUserPolicy, policy => policy.Requirements.Add(new ClaimRequirement(ClaimTypes.Role, TradeServiceReferential.TraderClaimValue)));
             });
 
-            var jsonSettings = new ServiceJsonSerializerSettings();
+            var jsonSettings = new TradeServiceJsonSerializerSettings();
 
             services
                     .AddSignalR(hubOptions =>
@@ -92,26 +80,43 @@ namespace AzurePlayground.Service.Infrastructure
                         options.PayloadSerializerSettings = jsonSettings;
                     });
 
-            services.AddResponseCaching();
-
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(ValidateModelStateAttribute));
             })
                     .RegisterJsonSettings(jsonSettings)
                     .AddFluentValidation(config => config.RegisterValidatorsFromAssemblies((assembly) => assembly.FullName.Contains("AzurePlayground.Service")));
+
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(options => 
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.Authority = ServiceConfiguration.Identity;
+                    options.ApiName = AzurePlaygroundConstants.Api.Trade;
+                    options.ApiSecret = ServiceConfiguration.Key;
+                });
+
         }
 
         protected override void ConfigureInternal(IApplicationBuilder app)
         {
+
+            app.UseSwagger(ServiceConfiguration);
+
             app.UseAuthentication();
+
+            app.UseConsulRegistration();
+
+            if (!HostingEnvironment.IsDevelopment())
+            {
+                //app.UseHsts();
+                //app.UseHttpsRedirection();
+            }
 
             app.UseSignalR(routes =>
             {
                 routes.MapHub<TradeEventHub>("/hub/trade");
             });
-
-            app.UseResponseCaching();
 
             app.UseMvc();
         }

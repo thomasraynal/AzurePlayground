@@ -38,7 +38,8 @@ namespace AzurePlayground.Service
                 Currency = request.Currency,
                 Volume = request.Volume,
                 Way = request.Way,
-                TradeService = _configuration.Id
+                TradeService = _configuration.Id,
+                Trader = request.Trader
             };
 
             trade.ApplyEvent(tradeCreationEvent);

@@ -1,0 +1,9 @@
+FROM microsoft/dotnet:2.2-sdk
+COPY ./bin/publish /app
+WORKDIR /app
+
+RUN cp -a ./certs/. /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path price.pfx
+
+ENTRYPOINT ["dotnet", "AzurePlayground.Price.Service.dll"]

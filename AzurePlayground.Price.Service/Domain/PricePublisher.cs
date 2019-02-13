@@ -1,10 +1,14 @@
-﻿using AzurePlayground.Service.Shared;
+﻿using AzurePlayground.Service.Infrastructure;
+using AzurePlayground.Service.Shared;
+using Dasein.Core.Lite;
 using Dasein.Core.Lite.Shared;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
@@ -15,28 +19,46 @@ namespace AzurePlayground.Service.Domain
     public class PricePublisher : IHostedService, ICanLog
     {
         private Random _rand;
-        private IHubContext<PriceHub> _priceHub;
         private IPriceService _priceService;
-        private IDisposable _priceGenerator;
-        private IServiceConfiguration _configuration;
-        private CompositeDisposable _dispose;
+        private PriceServiceConfiguration _configuration;
+        private CompositeDisposable _cleanUp;
         private IEnumerable<IPrice> _priceHistory;
+        private ISignalRService<Price, PriceRequest> _priceHubService;
 
-        public PricePublisher(IHubContext<PriceHub> priceHub, IPriceService priceService, IServiceConfiguration configuration)
+        public PricePublisher(IPriceService priceService, PriceServiceConfiguration configuration)
         {
             _rand = new Random();
 
-            _priceHub = priceHub;
             _priceService = priceService;
             _configuration = configuration;
 
-            _dispose = new CompositeDisposable();
+            var accessTokenRetrieverFactory = new AccessTokenRetrieverFactory();
+
+            var tokenRetriever = accessTokenRetrieverFactory.GetToken(
+                             "internal",
+                             "idkfa",
+                             _configuration.Identity,
+                             AzurePlaygroundConstants.Auth.ClientReferenceToken,
+                             AzurePlaygroundConstants.Api.Trade,
+                            _configuration.Key
+                         );
+
+            _priceHubService = SignalRServiceBuilder<Price, PriceRequest>
+                              .Create()
+                              .Build(new PriceRequest((p) => true), (opts) =>
+                              {
+                                  opts.AccessTokenProvider = () => Task.FromResult(tokenRetriever());
+                              });
+
+            _priceHubService.Connect(Scheduler.Default, 2000);
+
+            _cleanUp = new CompositeDisposable();
         }
 
         public Task StartAsync(CancellationToken token)
         {
 
-            _priceGenerator = Observable
+            var priceGenerator = Observable
               .Interval(TimeSpan.FromMilliseconds(250))
               .Delay(TimeSpan.FromMilliseconds(50))
               .Subscribe(async _ =>
@@ -48,13 +70,11 @@ namespace AzurePlayground.Service.Domain
                   var request = CreatePriceRequest(asset);
                   var price = await _priceService.CreatePrice(request);
 
-                  await _priceHub.Clients.All.SendAsync(TradeServiceReferential.RaisePriceChanged, price);
-
-                  this.LogInformation($"Create price {price}");
+                  await _priceHubService.Current.Proxy.RaiseChange(price);
 
               });
 
-            _dispose.Add(_priceGenerator);
+            _cleanUp.Add(priceGenerator);
 
             return Task.CompletedTask;
         }
@@ -99,7 +119,7 @@ namespace AzurePlayground.Service.Domain
 
         public Task StopAsync(CancellationToken token)
         {
-            _priceGenerator.Dispose();
+            _cleanUp.Dispose();
             return Task.CompletedTask;
         }
 

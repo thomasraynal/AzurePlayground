@@ -1,32 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using AzurePlayground.Web.App.Extensions;
 using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite.Shared;
-using IdentityModel;
 using IdentityModel.Client;
 using IdentityServer4;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using System.Net.Http.Headers;
 using Dasein.Core.Lite;
 using AzurePlayground.Web.App.Infrastructure;
-using Newtonsoft.Json;
+using StructureMap;
 
 namespace AzurePlayground.Web.App
 {
+    public class AppServiceRegistry : Registry
+    {
+        public AppServiceRegistry()
+        {
+            Scan(scanner =>
+            {
+                scanner.AssembliesAndExecutablesFromApplicationBaseDirectory();
+                scanner.WithDefaultConventions();
+                scanner.ConnectImplementationsToTypesClosing(typeof(ISignalRService<,>));
+            });
+        }
+    }
+
     public class WebAppStartup : ServiceStartupBase<AppConfiguration>
     {
         public WebAppStartup(IHostingEnvironment env, IConfiguration configuration) : base(env, configuration)
@@ -36,12 +40,12 @@ namespace AzurePlayground.Web.App
         protected override void ConfigureServicesInternal(IServiceCollection services)
         {
             services.AddSerilog(Configuration);
+
+            services.AddSingleton<IHubConfiguration>(ServiceConfiguration);
             services.AddSingleton<ICacheStrategy<MethodCacheObject>, DefaultCacheStrategy<MethodCacheObject>>();
 
-            var jsonSettings = new TradeServiceJsonSerializerSettings();
-
             services.AddMvc()
-                    .RegisterJsonSettings(jsonSettings);
+                    .RegisterJsonSettings(new TradeServiceJsonSerializerSettings());
 
             services.AddSingleton<IDiscoveryCache>(r =>
             {
@@ -74,7 +78,7 @@ namespace AzurePlayground.Web.App
                 options.RequireHttpsMetadata = false;
                 options.SignInScheme = "Cookie";
                 options.Scope.Add(AzurePlaygroundConstants.Desk.DeskScope);
-                options.ClientSecret = "AQMZwz4588oyWcIxdDDLf";
+                options.ClientSecret = ServiceConfiguration.Key;
                 options.ResponseType = "code id_token";
 
                 options.UseTokenLifetime = true;
@@ -97,11 +101,21 @@ namespace AzurePlayground.Web.App
         protected override void ConfigureInternal(IApplicationBuilder app)
         {
 
-            app.UseExceptionHandler("/Home/Error");
+            if (HostingEnvironment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                //app.UseHsts();
+                //app.UseHttpsRedirection();
+            }
 
             app.UseAuthentication();
 
             app.UseStaticFiles();
+
             app.UseMvcWithDefaultRoute();
         }
     }

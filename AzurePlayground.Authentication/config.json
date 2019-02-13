@@ -12,10 +12,7 @@
   },
   "serviceConfiguration": {
     "name": "authentication",
-    "identity": "http://localhost:5001",
     "version": "1",
-    "key": "AQMZwz4588oyWcIxdDDLf",
-    "mongoConnectionString": "mongodb://127.0.0.1:27017",
-    "mongoDatabase": "playground"
+    "key": "AQMZwz4588oyWcIxdDDLf"
   }
 }

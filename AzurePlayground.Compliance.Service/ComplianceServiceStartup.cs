@@ -2,24 +2,21 @@
 using Dasein.Core.Lite;
 using Dasein.Core.Lite.Shared;
 using FluentValidation.AspNetCore;
-using GraphQL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 using System;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Dasein.Core.Lite.Hosting;
-using Consul;
 using Microsoft.Extensions.Hosting;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using IdentityServer4.AccessTokenValidation;
 using AzurePlayground.EventStore;
 using AzurePlayground.Events.EventStore;
 using AzurePlayground.EventStore.Infrastructure;
+using Microsoft.AspNetCore.Hosting;
 
 namespace AzurePlayground.Service
 {
@@ -103,6 +100,12 @@ namespace AzurePlayground.Service
             app.UseSwagger(ServiceConfiguration);
 
             app.UseAuthentication();
+
+            if (!HostingEnvironment.IsDevelopment())
+            {
+                //app.UseHsts();
+                //app.UseHttpsRedirection();
+            }
 
             app.UseConsulRegistration();
 

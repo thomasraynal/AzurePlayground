@@ -28,13 +28,7 @@ namespace IdentityServer4.Quickstart.UI
 
         public IActionResult Index()
         {
-            if (_environment.IsDevelopment())
-            {
-                return View();
-            }
-
-            _logger.LogInformation("Homepage is disabled in production. Returning 404.");
-            return NotFound();
+            return View();
         }
 
         public async Task<IActionResult> Error(string errorId)

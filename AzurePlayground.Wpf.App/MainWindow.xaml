@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AzurePlayground.Wpf.App"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" WindowState="Maximized" Height="450" Width="800">
     <FrameworkElement.DataContext>
         <local:MainViewModel/>
     </FrameworkElement.DataContext>
@@ -15,14 +15,20 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
             <RowDefinition Height="4*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-
-    <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
-            <Button Width="150" Content="Login" Command="{Binding Login}"/>
-            <Button Width="150" Content="Logout" Command="{Binding Logout}"/>
-    </StackPanel>
-        <TextBox Text="{Binding Result}" Grid.Row="1" Grid.Column="0" TextWrapping="Wrap"></TextBox>
+        <DataGrid local:DataGridBehavior.Autoscroll="True" Grid.Column="0"  Grid.Row="0" AutoGenerateColumns="true" ItemsSource="{Binding Trades}"/>
+        <ListView  local:ListBoxBehavior.ScrollOnNewItem="true" Grid.Column="0"  Grid.Row="1" ItemsSource="{Binding Events}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="500" Header="Events"  DisplayMemberBinding="{Binding}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <Button Height="150" Content="Login" Command="{Binding Login}"/>
+            <Button Height="150" IsEnabled="{Binding IsLogin}" Content="Make Trade" Command="{Binding MakeTrade}"/>
+        </StackPanel>
     </Grid>
 </Window>

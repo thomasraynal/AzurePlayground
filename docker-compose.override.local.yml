@@ -1,0 +1,48 @@
+version: '3.4'
+
+services:
+
+  authentication:
+    build:
+      dockerfile: Dockerfile.local
+      context: ./AzurePlayground.Authentication
+
+  gateway:
+    build:
+      dockerfile: Dockerfile.local
+      context: ./AzurePlayground.Gateway
+
+  app:
+    build:
+      dockerfile: Dockerfile.local
+      context: ./AzurePlayground.Web.App
+
+  compliance:
+    build:
+      dockerfile: Dockerfile.local
+      context: ./AzurePlayground.Compliance.Service
+
+  market:
+    build: 
+      dockerfile: Dockerfile.local
+      context: ./AzurePlayground.Market.Service
+
+  trade:
+    build:
+      dockerfile: Dockerfile.local
+      context: ./AzurePlayground.Trade.Service
+
+  price:
+    build: 
+      dockerfile: Dockerfile.local
+      context: ./AzurePlayground.Price.Service
+
+  event:
+    build: 
+      dockerfile: Dockerfile.local
+      context: ./AzurePlayground.Trade.Event.Service
+
+  generator:
+    build: 
+      dockerfile: Dockerfile.local
+      context: ./AzurePlayground.Trade.Generator

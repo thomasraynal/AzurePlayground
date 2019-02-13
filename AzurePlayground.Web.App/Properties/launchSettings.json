@@ -12,8 +12,8 @@
       "commandName": "Project",
       "environmentVariables": {
         "serviceConfiguration:identity": "http://localhost:5001",
-        "serviceConfiguration:gateway": "http://localhost:5003",
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "serviceConfiguration:gateway": "http://localhost:5003"
       },
       "applicationUrl": "http://localhost:5002"
     },

@@ -9,9 +9,9 @@
       "environmentVariables": {
         "serviceConfiguration:identity": "http://localhost:5001",
         "serviceConfiguration:consul": "http://localhost:8500",
-        "serviceConfiguration:id": "price1",
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "serviceConfiguration:hubs": "[{name : \"PriceHub\", endpoints: [ \"http:\\localhost:5009/hub/price\" ]}]"
+        "serviceConfiguration:hubs": "[{name : \"PriceHub\", endpoints: [ \"http://localhost:5009/hub/price\" ]}]",
+        "serviceConfiguration:id": "price1"
       },
       "applicationUrl": "http://localhost:5009/"
     },

@@ -11,12 +11,12 @@ using System;
 using System.Security.Claims;
 using Dasein.Core.Lite.Hosting;
 using IdentityServer4.AccessTokenValidation;
-using Microsoft.Extensions.Hosting;
 
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using AzurePlayground.EventStore.Infrastructure;
 using AzurePlayground.EventStore;
 using AzurePlayground.Events.EventStore;
+using Microsoft.AspNetCore.Hosting;
 
 namespace AzurePlayground.Service
 {
@@ -58,7 +58,6 @@ namespace AzurePlayground.Service
             services.AddEventStore<EventStoreRepository>(ServiceConfiguration.EventStore)
                     .AddEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>, TradeEventCache>();
 
-            services.AddSingleton<IHostedService, TradeEventListener>();
 
             services.AddConsulRegistration(ServiceConfiguration);
 
@@ -105,6 +104,12 @@ namespace AzurePlayground.Service
             app.UseSwagger(ServiceConfiguration);
 
             app.UseAuthentication();
+
+            if (!HostingEnvironment.IsDevelopment())
+            {
+                //app.UseHsts();
+                //app.UseHttpsRedirection();
+            }
 
             app.UseConsulRegistration();
 

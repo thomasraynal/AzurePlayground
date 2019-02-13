@@ -6,9 +6,9 @@ using System.Text;
 
 namespace AzurePlayground.Service.Shared
 {
-    public class TradeEventRequest : HubRequestBase<TradeEvent>
+    public class TradeEventRequest : HubRequestBase<Trade>
     {
-        public TradeEventRequest(Expression<Func<TradeEvent, bool>> filter) : base(filter)
+        public TradeEventRequest(Expression<Func<Trade, bool>> filter) : base(filter)
         {
         }
     }

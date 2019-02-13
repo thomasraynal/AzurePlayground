@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Models;
+﻿using AzurePlayground.Service.Shared;
+using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,21 +61,19 @@ namespace AzurePlayground.Persistence
         {
             var logger = app.ApplicationServices.GetService<ILogger>();
 
-            Policy
-               .Handle<Exception>()
-               .WaitAndRetryForever(
-                    attempt => TimeSpan.FromMilliseconds(5000),
-                    (ex, timespan) => logger.LogError($"Failed to reach auth db - [{ex.Message}]"))
-                .Execute(() =>
-                {
-                    var repository = app.ApplicationServices.GetService<IRepository>();
+            RetryPolicies.WaitAndRetryForever<Exception>(
+                attemptDelay: TimeSpan.FromMilliseconds(5000),
+                onRetry: (ex, timespan) => logger.LogError($"Failed to reach auth db - [{ex.Message}]"),
+                doTry: () =>
+                    {
+                        var repository = app.ApplicationServices.GetService<IRepository>();
 
-                    SeedInternal(repository, clients);
-                    SeedInternal(repository, apiRessources);
-                    SeedInternal(repository, identityRessources);
-                    SeedInternal(repository, persistedGrants);
-
-                });
+                        SeedInternal(repository, clients);
+                        SeedInternal(repository, apiRessources);
+                        SeedInternal(repository, identityRessources);
+                        SeedInternal(repository, persistedGrants);
+                    }
+                );
         }
     }
 }

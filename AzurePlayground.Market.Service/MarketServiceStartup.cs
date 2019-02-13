@@ -17,6 +17,7 @@ using IdentityServer4.AccessTokenValidation;
 using AzurePlayground.EventStore;
 using AzurePlayground.Events.EventStore;
 using AzurePlayground.EventStore.Infrastructure;
+using Microsoft.AspNetCore.Hosting;
 
 namespace AzurePlayground.Service
 {
@@ -45,8 +46,6 @@ namespace AzurePlayground.Service
         {
             services.AddSerilog(Configuration);
 
-            services.AddSingleton<IHubConfiguration>(ServiceConfiguration);
-            services.AddSingleton<IHubContextHolder<Price>, HubContextHolder<Price>>();
             services.AddSingleton<ICacheStrategy<MethodCacheObject>, DefaultCacheStrategy<MethodCacheObject>>();
             services.AddSingleton<ICacheStrategy<ResponseCacheEntry>, DefaultCacheStrategy<ResponseCacheEntry>>();
             services.AddTransient<IAuthorizationHandler, ClaimRequirementHandler>();
@@ -101,6 +100,12 @@ namespace AzurePlayground.Service
             app.UseSwagger(ServiceConfiguration);
 
             app.UseAuthentication();
+
+            if (!HostingEnvironment.IsDevelopment())
+            {
+                //app.UseHsts();
+                //app.UseHttpsRedirection();
+            }
 
             app.UseConsulRegistration();
 

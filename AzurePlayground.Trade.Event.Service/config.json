@@ -7,24 +7,11 @@
           "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console",
           "outputTemplate": "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {NewLine}{Exception}"
         }
-      },
-      {
-        "Name": "File",
-        "Args": {
-          "path": "service.log",
-          "rollingInterval": "Infinite"
-        }
       }
     ]
   },
   "serviceConfiguration": {
-    "hubs": [
-      {
-        "name": "PriceHub",
-        "endpoints": [ "http://localhost:8888/hub/price", "http://localhost:5009/hub/price" ]
-      }
-    ],
-    "name": "events",
+    "name": "event",
     "version": "1",
     "key": "AQMZwz4588oyWcIxdDDLf"
   }

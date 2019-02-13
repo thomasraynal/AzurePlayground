@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AzurePlayground.Service
 {
-    public class MarketServiceConfiguration : ServiceHubConfigurationBase, ICanRegister
+    public class MarketServiceConfiguration : ServiceConfigurationBase, ICanRegister
     {
         public string Id { get; set; }
         public override string Name { get; set; }

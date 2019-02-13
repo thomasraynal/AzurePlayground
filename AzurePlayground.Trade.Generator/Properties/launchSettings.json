@@ -13,7 +13,12 @@
         "serviceConfiguration:gateway": "http://localhost:5003",
         "serviceConfiguration:eventstore": "tcp://admin:changeit@localhost:1113"
       },
-      "applicationUrl": "http://localhost:5010"
+      "applicationUrl": "http://localhost:5012"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}"
     }
   }
 }

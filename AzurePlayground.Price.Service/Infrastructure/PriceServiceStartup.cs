@@ -4,23 +4,16 @@ using Dasein.Core.Lite;
 using Dasein.Core.Lite.Hosting;
 using Dasein.Core.Lite.Shared;
 using FluentValidation.AspNetCore;
-using GraphQL;
 using IdentityServer4.AccessTokenValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using StructureMap;
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AzurePlayground.Service.Infrastructure
 {
@@ -33,7 +26,6 @@ namespace AzurePlayground.Service.Infrastructure
                 scanner.AssembliesAndExecutablesFromApplicationBaseDirectory();
                 scanner.WithDefaultConventions();
                 scanner.ConnectImplementationsToTypesClosing(typeof(ISignalRService<,>));
-                scanner.ConnectImplementationsToTypesClosing(typeof(IServiceProxy<>)).OnAddedPluginTypes(p => p.Singleton());
             });
 
             this.RegisterService<IPriceService, PriceService>();
@@ -105,6 +97,12 @@ namespace AzurePlayground.Service.Infrastructure
             app.UseSwagger(ServiceConfiguration);
 
             app.UseAuthentication();
+
+            if (!HostingEnvironment.IsDevelopment())
+            {
+                //app.UseHsts();
+                //app.UseHttpsRedirection();
+            }
 
             app.UseConsulRegistration();
 

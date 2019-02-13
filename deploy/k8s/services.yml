@@ -1,0 +1,123 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentication
+spec:
+  ports:
+  - name: http
+    port: 80
+  - name: https
+    port: 443
+  selector:
+    app: azureplayground
+    component: authentication
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+spec:
+  ports:
+  - name: http
+    port: 80
+  - name: https
+    port: 443
+  selector:
+    app: azureplayground
+    component: gateway
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consul
+spec:
+  ports:
+  - name: c1
+    port: 8500
+  selector:
+    app: azureplayground
+    component: consul
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eventstore
+spec:
+  ports:
+  - name: ev1
+    port: 2113
+  - name: ev2
+    port: 1113
+  selector:
+    app: azureplayground
+    component: eventstore
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: price
+spec:
+  ports:
+  - name: http
+    port: 80
+  - name: https
+    port: 443
+  selector:
+    app: azureplayground
+    component: price
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: event
+spec:
+  ports:
+  - name: http
+    port: 80
+  - name: https
+    port: 443
+  selector:
+    app: azureplayground
+    component: event
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trade
+spec:
+  ports:
+  - name: http
+    port: 80
+  - name: https
+    port: 443
+  selector:
+    app: azureplayground
+    component: trade
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: compliance
+spec:
+  ports:
+  - name: http
+    port: 80
+  - name: https
+    port: 443
+  selector:
+    app: azureplayground
+    component: compliance
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: market
+spec:
+  ports:
+  - name: http
+    port: 80
+  - name: https
+    port: 443
+  selector:
+    app: azureplayground
+    component: market

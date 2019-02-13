@@ -29,6 +29,46 @@
       "LoadBalancerOptions": {
         "Type": "RoundRobin"
       }
+    },
+    {
+      "DownstreamPathTemplate": "/hub/trade/{everything}",
+      "DownstreamScheme": "ws",
+      "ServiceName": "event",
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      },
+      "UpstreamPathTemplate": "/hub/trade/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/hub/trade/",
+      "DownstreamScheme": "ws",
+      "ServiceName": "event",
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      },
+      "UpstreamPathTemplate": "/hub/trade/",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/hub/price/{everything}",  
+      "DownstreamScheme": "ws",
+      "ServiceName": "price",
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      },
+      "UpstreamPathTemplate": "/hub/price/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/hub/price/",
+      "DownstreamScheme": "ws",
+      "ServiceName": "price",
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      },
+      "UpstreamPathTemplate": "/hub/price/",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     }
   ],
   "GlobalConfiguration": {

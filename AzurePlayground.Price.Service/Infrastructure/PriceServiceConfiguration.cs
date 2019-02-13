@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AzurePlayground.Service.Infrastructure
 {
-    public class PriceServiceConfiguration : ServiceHubConfigurationBase, ICanRegister
+    public class PriceServiceConfiguration : ServiceHubGatewayConfiguration, ICanRegister
     {
         public string Id { get; set; }
         public override string Name { get; set; }

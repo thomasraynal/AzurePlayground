@@ -35,7 +35,7 @@ namespace AzurePlayground.Service
                             .GetOutputStream()
                             .Subscribe(obs =>
                             {
-                                if (obs.Trades.Count == 0) return;
+                                if (obs.Trades.Count == 0 || obs.IsCacheState) return;
 
                                 var relevantChanges = obs.Trades.Where(trade => trade.Status == TradeStatus.Filled);
 
@@ -77,8 +77,6 @@ namespace AzurePlayground.Service
                                             }
 
                                             await _repository.SaveAsync(trade);
-
-                                            this.LogInformation($"Handle trade {trade}");
 
                                         }
                                         catch (Exception ex)

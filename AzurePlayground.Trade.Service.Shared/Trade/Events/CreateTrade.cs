@@ -12,6 +12,7 @@ namespace AzurePlayground.Service.Shared
         public double Volume { get; set; }
         public String Currency { get; set; }
         public String TradeService { get; set; }
+        public String Trader { get; set; }
 
         public override void Apply(Trade entity)
         {
@@ -22,6 +23,7 @@ namespace AzurePlayground.Service.Shared
             entity.Currency = Currency;
             entity.Volume = Volume;
             entity.TradeService = TradeService;
+            entity.Trader = Trader;
         }
     }
 }

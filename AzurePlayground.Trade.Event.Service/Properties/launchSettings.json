@@ -1,0 +1,25 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true
+  },
+  "profiles": {
+    "AzurePlayground.Trade.Event.Service": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "serviceConfiguration:identity": "http://localhost:5001",
+        "serviceConfiguration:consul": "http://localhost:8500",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "serviceConfiguration:eventstore": "tcp://admin:changeit@localhost:1113",
+        "serviceConfiguration:hubs": "[{name : \"TradeEventHub\", endpoints: [ \"http://localhost:5010/hub/trade\" ]}]",
+        "serviceConfiguration:id": "event1"
+      },
+      "applicationUrl": "http://localhost:5010/"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}"
+    }
+  }
+}

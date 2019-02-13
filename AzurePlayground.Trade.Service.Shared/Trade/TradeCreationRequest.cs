@@ -24,5 +24,6 @@ namespace AzurePlayground.Service.Shared
         public TradeWay Way { get; set; }
         public string Currency { get; set; }
         public double Volume { get; set; }
+        public string Trader { get; set; }
     }
 }

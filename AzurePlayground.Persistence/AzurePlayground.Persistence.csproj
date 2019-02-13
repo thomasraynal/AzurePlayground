@@ -10,4 +10,8 @@
     <PackageReference Include="Polly" Version="7.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AzurePlayground.Trade.Service.Shared\AzurePlayground.Trade.Service.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

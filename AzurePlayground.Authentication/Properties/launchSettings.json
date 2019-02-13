@@ -12,9 +12,8 @@
       "commandName": "Project",
       "environmentVariables": {
         "identity": "http://localhost:5001",
-        "mongoDatabase": "playground",
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "mongoConnectionString": "mongodb://127.0.0.1:27017"
+        "serviceConfiguration:mongoConnectionString": "mongodb://127.0.0.1:27017/playground",
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:5001/"
     },

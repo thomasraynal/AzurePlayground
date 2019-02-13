@@ -12,11 +12,13 @@
 
 # Build results
 [Dd]ebug/
+!/debug
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
 
 [Bb]uild/
+!/build
 Tests/
 bld/
 [Bb]in/
@@ -186,7 +188,7 @@ ClientBin/
 *~
 *.dbmdl
 *.dbproj.schemaview
-*.pfx
+
 *.publishsettings
 node_modules/
 orleans.codegen.cs

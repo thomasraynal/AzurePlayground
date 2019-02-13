@@ -42,6 +42,12 @@ namespace AzurePlayground.Authentication
                         new MongoClaim(){Type =AzurePlaygroundConstants.Desk.DeskClaimType, Value =  AzurePlaygroundConstants.Desk.DeskFixedIncomeClaim}
                     }
                 }, "bob"),
+                 new PasswordHolder<ApplicationUser>(new ApplicationUser("internal"){
+                    Claims =
+                    {
+                        new MongoClaim(){Type =JwtClaimTypes.Subject, Value =Guid.NewGuid().ToString() },
+                    }
+                }, "idkfa")
             };
         }
 

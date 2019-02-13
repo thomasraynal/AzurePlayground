@@ -57,6 +57,14 @@ namespace AzurePlayground.Gateway
 
             app.UseCors("CorsPolicy");
 
+            if (!env.IsDevelopment())
+            {
+                //app.UseHsts();
+                //app.UseHttpsRedirection();
+            }
+
+            app.UseWebSockets();
+
             app.UseOcelot().Wait();
 
             Log.Logger.Information($"Start service [{_serviceConfiguration.Name}]");

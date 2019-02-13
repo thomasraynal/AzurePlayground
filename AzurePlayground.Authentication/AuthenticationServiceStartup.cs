@@ -6,16 +6,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Dasein.Core.Lite.Hosting;
 using FluentValidation.AspNetCore;
-using System;
 using Microsoft.AspNetCore.Identity;
 using MongoDbGenericRepository;
-using System.Linq;
 using AzurePlayground.Persistence;
 using AzurePlayground.Persistence.Mongo;
-using IdentityServer4.Stores;
 using AzurePlayground.Service.Shared;
-using IdentityModel;
 using IdentityServer4.Validation;
+using MongoDB.Driver;
 
 namespace AzurePlayground.Authentication
 {
@@ -30,7 +27,9 @@ namespace AzurePlayground.Authentication
             services.AddSerilog(Configuration);
             services.AddSingleton<ICacheStrategy<MethodCacheObject>, DefaultCacheStrategy<MethodCacheObject>>();
 
-            var mongoDbContext = new MongoDbContext(ServiceConfiguration.MongoConnectionString, ServiceConfiguration.MongoDatabase);
+            var database = MongoUrl.Create(ServiceConfiguration.MongoConnectionString).DatabaseName;
+
+            var mongoDbContext = new MongoDbContext(ServiceConfiguration.MongoConnectionString, database);
 
             services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
@@ -55,8 +54,6 @@ namespace AzurePlayground.Authentication
                 .AddProfileService<AllAvailableClaimsProfileService>()
                 .AddSigningCredential(IdentityServerBuilderExtensionsCrypto.CreateRsaSecurityKey())
                 .Services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
-               
-
 
             services.AddAuthorization(options =>
             {
@@ -78,20 +75,19 @@ namespace AzurePlayground.Authentication
             app.UseIdentityServer();
 
             app.SeedIdentityServer(
-              clients: DbSeed.GetSeedClients(ServiceConfiguration), 
-              apiRessources : DbSeed.GetSeedApiResources(ServiceConfiguration), 
-              identityRessources : DbSeed.GetSeedIdentityRessources());
+              clients: DbSeed.GetSeedClients(ServiceConfiguration),
+              apiRessources: DbSeed.GetSeedApiResources(ServiceConfiguration),
+              identityRessources: DbSeed.GetSeedIdentityRessources());
 
             app.SeedApplicationUser(DbSeed.GetSeedUsers());
 
-            if (HostingEnvironment.IsDevelopment())
+            if (!HostingEnvironment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseHsts();
+                //app.UseHttpsRedirection();
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+
+            app.UseExceptionHandler("/Home/Error");
 
             app.UseAuthentication();
 
