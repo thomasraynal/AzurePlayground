@@ -64,7 +64,7 @@ namespace AzurePlayground.Persistence
                .Handle<Exception>()
                .WaitAndRetryForever(
                     attempt => TimeSpan.FromMilliseconds(5000),
-                    (ex, timespan) => logger.LogError($"Failed to auth db - [{ex.Message}]"))
+                    (ex, timespan) => logger.LogError($"Failed to reach auth db - [{ex.Message}]"))
                 .Execute(() =>
                 {
                     var repository = app.ApplicationServices.GetService<IRepository>();

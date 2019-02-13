@@ -116,6 +116,20 @@ services:
       - serviceConfiguration:eventstore=tcp://admin:changeit@eventstore:1113
       - serviceConfiguration:id=trade1
 
+  price:
+    image: ${DOCKER_REGISTRY-}azureplaygroundpriceservice
+    build: 
+      context: ./AzurePlayground.Price.Service
+    container_name: price
+    ports:
+      - "5009:5009"    expose:
+      - "5009"    depends_on:
+      - gateway    environment:
+      - ASPNETCORE_URLS=http://*:5009
+      - serviceConfiguration:identity=http://authentication:5001
+      - serviceConfiguration:consul=http://consul:8500
+      - serviceConfiguration:id=price1
+
   generator:
     image: ${DOCKER_REGISTRY-}azureplaygroundtradegenerator
     build: 

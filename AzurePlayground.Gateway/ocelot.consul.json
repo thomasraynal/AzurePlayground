@@ -1,9 +1,9 @@
 {
   "ReRoutes": [
     {
-      "DownstreamPathTemplate": "/api/{version}/price/{everything}",
+      "DownstreamPathTemplate": "/api/{version}/price",
       "DownstreamScheme": "http",
-      "UpstreamPathTemplate": "/api/{version}/price/{everything}",
+      "UpstreamPathTemplate": "/api/{version}/price",
       "UpstreamHttpMethod": [ "GET" ],
       "ServiceName": "price",
       "LoadBalancerOptions": {
