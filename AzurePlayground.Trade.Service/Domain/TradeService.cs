@@ -1,25 +1,20 @@
-﻿using AzurePlayground.Events.EventStore;
-using AzurePlayground.EventStore;
-using AzurePlayground.EventStore.Infrastructure;
-using AzurePlayground.Service.Shared;
-using Dasein.Core.Lite;
+﻿using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite.Shared;
+using EventStore.Client.Lite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Concurrency;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AzurePlayground.Service
 {
     public class TradeService : IService<ITradeService>, ITradeService, ICanLog
     {
-        private IEventStoreRepository _repository;
+        private IEventStoreRepository<Guid> _repository;
         private TradeServiceConfiguration _configuration;
-        private IEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>> _cache;
-
-        public TradeService(IEventStoreRepository repository, TradeServiceConfiguration configuration, IEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>> cache)
+        private IEventStoreCache<Guid, Trade, Trade> _cache;
+        
+        public TradeService(IEventStoreRepository<Guid> repository, TradeServiceConfiguration configuration, IEventStoreCache<Guid, Trade, Trade> cache)
         {
             _repository = repository;
             _configuration = configuration;
@@ -33,7 +28,6 @@ namespace AzurePlayground.Service
 
             var tradeCreationEvent = new CreateTrade()
             {
-                EntityId = trade.Id,
                 Asset = request.Asset,
                 Currency = request.Currency,
                 Volume = request.Volume,
@@ -48,7 +42,7 @@ namespace AzurePlayground.Service
 
             return new TradeCreationResult()
             {
-                TradeId = trade.Id
+                TradeId = trade.EntityId
             };
 
         }

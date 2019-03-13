@@ -25,8 +25,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Web.App", "
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{A13B087E-58E9-4D52-B545-05DDF7A35A19}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Events.EventStore", "AzurePlayground.Events.EventStore\AzurePlayground.Events.EventStore.csproj", "{0E8E0412-6534-4786-9CD6-3A3584C30192}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Gateway", "AzurePlayground.Gateway\AzurePlayground.Gateway.csproj", "{088CBE64-3F17-4B50-896B-62542D4773B1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Market.Service", "AzurePlayground.Market.Service\AzurePlayground.Market.Service.csproj", "{930386BF-390B-4BCD-BDB8-EC98B1C200C7}"
@@ -38,6 +36,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurePlayground.Trade.Event.Service", "AzurePlayground.Trade.Event.Service\AzurePlayground.Trade.Event.Service.csproj", "{8ACA5430-9F65-4F49-9A5D-09E1A8FBA8EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurePlayground.Wpf.App", "AzurePlayground.Wpf.App\AzurePlayground.Wpf.App.csproj", "{401C5F9D-41CE-4767-8F87-3E6B7E80734E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventStore.Client.Lite", "Modules\EventStore.Client.Lite\EventStore.Client.Lite\EventStore.Client.Lite.csproj", "{CD33CD69-388D-4211-BD1A-F738DEE9054B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventStore.Client.Lite.Shared", "Modules\EventStore.Client.Lite\EventStore.Client.Lite.Shared\EventStore.Client.Lite.Shared.csproj", "{3D315282-18EB-4CCD-8E8C-8F254C682447}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,10 +91,6 @@ Global
 		{A13B087E-58E9-4D52-B545-05DDF7A35A19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A13B087E-58E9-4D52-B545-05DDF7A35A19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A13B087E-58E9-4D52-B545-05DDF7A35A19}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0E8E0412-6534-4786-9CD6-3A3584C30192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0E8E0412-6534-4786-9CD6-3A3584C30192}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0E8E0412-6534-4786-9CD6-3A3584C30192}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0E8E0412-6534-4786-9CD6-3A3584C30192}.Release|Any CPU.Build.0 = Release|Any CPU
 		{088CBE64-3F17-4B50-896B-62542D4773B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{088CBE64-3F17-4B50-896B-62542D4773B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{088CBE64-3F17-4B50-896B-62542D4773B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -117,6 +115,14 @@ Global
 		{401C5F9D-41CE-4767-8F87-3E6B7E80734E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{401C5F9D-41CE-4767-8F87-3E6B7E80734E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{401C5F9D-41CE-4767-8F87-3E6B7E80734E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD33CD69-388D-4211-BD1A-F738DEE9054B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD33CD69-388D-4211-BD1A-F738DEE9054B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD33CD69-388D-4211-BD1A-F738DEE9054B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD33CD69-388D-4211-BD1A-F738DEE9054B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D315282-18EB-4CCD-8E8C-8F254C682447}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D315282-18EB-4CCD-8E8C-8F254C682447}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D315282-18EB-4CCD-8E8C-8F254C682447}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D315282-18EB-4CCD-8E8C-8F254C682447}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

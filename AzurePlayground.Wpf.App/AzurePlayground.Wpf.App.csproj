@@ -301,6 +301,10 @@
       <Project>{eeafb333-a35f-4083-a25e-d98986675c03}</Project>
       <Name>Dasein.Core.Lite.Shared</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Modules\EventStore.Client.Lite\EventStore.Client.Lite.Shared\EventStore.Client.Lite.Shared.csproj">
+      <Project>{3D315282-18EB-4CCD-8E8C-8F254C682447}</Project>
+      <Name>EventStore.Client.Lite.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Refit.4.6.58\build\net461\refit.targets" Condition="Exists('..\packages\Refit.4.6.58\build\net461\refit.targets')" />

@@ -1,22 +1,13 @@
-﻿using AzurePlayground.Events.EventStore;
-using AzurePlayground.EventStore;
-using AzurePlayground.EventStore.Infrastructure;
-using AzurePlayground.Service.Shared;
+﻿using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite.Shared;
-using IdentityModel.Client;
-using IdentityServer4.Models;
+using EventStore.Client.Lite;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using Polly;
 using Refit;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net.Http;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,12 +17,12 @@ namespace AzurePlayground.Generator
     {
         private ITradeService _tradeService;
         private TradeGeneratorConfiguration _configuration;
-        private IEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>> _cache;
-        private IEventStoreRepository _repository;
+        private IEventStoreCache<Guid, Trade, Trade> _cache;
+        private IEventStoreRepository<Guid> _repository;
         private JwtSecurityTokenHandler _jwthandler;
         private CompositeDisposable _cleanup;
 
-        public TradeGenerator(TradeGeneratorConfiguration configuration, IEventStoreRepository repository, IEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>> cache)
+        public TradeGenerator(TradeGeneratorConfiguration configuration, IEventStoreRepository<Guid> repository, IEventStoreCache<Guid, Trade, Trade> cache)
         {
             _configuration = configuration;
 
@@ -91,13 +82,13 @@ namespace AzurePlayground.Generator
 
 
             var observerDisposable = _cache
-                                .GetOutputStream()
+                                .GetStream()
                                 .Subscribe(obs =>
                                 {
 
                                     if (obs.IsCacheState) return;
 
-                                    foreach (var trade in obs.Trades)
+                                    foreach (var trade in obs.Entities)
                                     {
                                         this.LogInformation($"Handle trade {trade}");
                                     }

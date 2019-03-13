@@ -31,10 +31,10 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\AzurePlayground.Events.EventStore\AzurePlayground.Events.EventStore.csproj" />
     <ProjectReference Include="..\AzurePlayground.Trade.Service.Shared\AzurePlayground.Trade.Service.Shared.csproj" />
     <ProjectReference Include="..\Modules\Dasein.Core.Lite\Dasein.Core.Lite.Shared\Dasein.Core.Lite.Shared.csproj" />
     <ProjectReference Include="..\Modules\Dasein.Core.Lite\Dasein.Core.Lite\Dasein.Core.Lite.csproj" />
+    <ProjectReference Include="..\Modules\EventStore.Client.Lite\EventStore.Client.Lite\EventStore.Client.Lite.csproj" />
   </ItemGroup>
   
   <ItemGroup>

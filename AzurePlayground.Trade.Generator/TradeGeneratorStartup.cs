@@ -1,12 +1,9 @@
-﻿using AzurePlayground.Events.EventStore;
-using AzurePlayground.EventStore;
-using AzurePlayground.EventStore.Infrastructure;
-using AzurePlayground.Service.Shared;
+﻿using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite;
 using Dasein.Core.Lite.Hosting;
 using Dasein.Core.Lite.Shared;
+using EventStore.Client.Lite;
 using FluentValidation.AspNetCore;
-using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -25,7 +22,7 @@ namespace AzurePlayground.Generator
             {
                 scanner.AssembliesAndExecutablesFromApplicationBaseDirectory();
                 scanner.WithDefaultConventions();
-                scanner.AddAllTypesOf<IEvent>();
+                scanner.ConnectImplementationsToTypesClosing(typeof(IEvent<>));
                 scanner.ConnectImplementationsToTypesClosing(typeof(IMutable<,>));
                 scanner.ConnectImplementationsToTypesClosing(typeof(ISignalRService<,>));
             });
@@ -56,8 +53,8 @@ namespace AzurePlayground.Generator
                     .AddFluentValidation(config => config.RegisterValidatorsFromAssemblies((assembly) => assembly.FullName.Contains("AzurePlayground.Service")));
 
 
-            services.AddEventStore<EventStoreRepository>(ServiceConfiguration.EventStore)
-                    .AddEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>, TradeEventCache>();
+            services.AddEventStore<Guid, EventStoreRepository<Guid>>(ServiceConfiguration.EventStore)
+                    .AddEventStoreCache<Guid, Trade>();
 
 
         }

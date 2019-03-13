@@ -1,8 +1,6 @@
-﻿using AzurePlayground.Events.EventStore;
-using AzurePlayground.EventStore;
-using AzurePlayground.EventStore.Infrastructure;
-using AzurePlayground.Service.Shared;
+﻿using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite.Shared;
+using EventStore.Client.Lite;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Refit;
@@ -16,13 +14,13 @@ namespace AzurePlayground.Service
 {
     public class MarketService : ICanLog, IHostedService
     {
-        private readonly IEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>> _cache;
-        private readonly IEventStoreRepository _repository;
+        private readonly IEventStoreCache<Guid, Trade,Trade> _cache;
+        private readonly IEventStoreRepository<Guid> _repository;
         private readonly MarketServiceConfiguration _configuration;
         private IDisposable _cleanup;
         private IPriceService _priceService;
 
-        public MarketService(IEventStoreRepository repository, MarketServiceConfiguration configuration, IEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>> cache)
+        public MarketService(IEventStoreRepository<Guid> repository, MarketServiceConfiguration configuration, IEventStoreCache<Guid, Trade, Trade> cache)
         {
             _cache = cache;
             _repository = repository;
@@ -44,12 +42,12 @@ namespace AzurePlayground.Service
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _cleanup = _cache
-                          .GetOutputStream()
+                          .GetStream()
                           .Subscribe(obs =>
                           {
-                              if (obs.Trades.Count == 0 || obs.IsCacheState) return;
+                              if (obs.Entities.Count == 0 || obs.IsCacheState) return;
 
-                              var relevantChanges = obs.Trades.Where(trade => trade.Status == TradeStatus.Created);
+                              var relevantChanges = obs.Entities.Where(trade => trade.Status == TradeStatus.Created);
 
                               foreach (var change in relevantChanges)   
                               {
@@ -57,13 +55,12 @@ namespace AzurePlayground.Service
                                   {
                                       try
                                       {
-                                          var trade = await _repository.GetById<Trade>(change.Id);
+                                          var trade = await _repository.GetById<Trade>(change.EntityId);
 
                                           if (TradeServiceReferential.Rand.Next(1, 10) == 1)
                                           {
                                               var tradeRejectedEvent = new MarketRejectTrade()
                                               {
-                                                  EntityId = trade.Id,
                                                   MarketService = _configuration.Id,
                                               };
 
@@ -87,7 +84,6 @@ namespace AzurePlayground.Service
 
                                               var fillTradeEvent = new FillTrade()
                                               {
-                                                  EntityId = trade.Id,
                                                   Counterparty = counterparty,
                                                   Price = price.Value,
                                                   Date = DateTime.Now,

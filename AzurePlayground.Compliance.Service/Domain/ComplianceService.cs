@@ -1,15 +1,10 @@
-﻿using AzurePlayground.Events.EventStore;
-using AzurePlayground.EventStore;
-using AzurePlayground.EventStore.Infrastructure;
-using AzurePlayground.Service.Shared;
+﻿using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite.Shared;
+using EventStore.Client.Lite;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,12 +12,12 @@ namespace AzurePlayground.Service
 {
     public class ComplianceService : IHostedService, ICanLog
     {
-        private readonly IEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>> _cache;
-        private readonly IEventStoreRepository _repository;
+        private readonly IEventStoreCache<Guid, Trade, Trade> _cache;
+        private readonly IEventStoreRepository<Guid> _repository;
         private readonly ComplianceServiceConfiguration _configuration;
         private IDisposable _cleanup;
 
-        public ComplianceService(IEventStoreRepository repository, ComplianceServiceConfiguration configuration, IEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>> cache)
+        public ComplianceService(IEventStoreRepository<Guid> repository, ComplianceServiceConfiguration configuration, IEventStoreCache<Guid, Trade,Trade> cache)
         {
             _cache = cache;
             _repository = repository;
@@ -32,12 +27,12 @@ namespace AzurePlayground.Service
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _cleanup = _cache
-                            .GetOutputStream()
+                            .GetStream()
                             .Subscribe(obs =>
                             {
-                                if (obs.Trades.Count == 0 || obs.IsCacheState) return;
+                                if (obs.Entities.Count == 0 || obs.IsCacheState) return;
 
-                                var relevantChanges = obs.Trades.Where(trade => trade.Status == TradeStatus.Filled);
+                                var relevantChanges = obs.Entities.Where(trade => trade.Status == TradeStatus.Filled);
 
                                 foreach (var change in relevantChanges)
                                 {
@@ -46,13 +41,12 @@ namespace AzurePlayground.Service
                                         try
                                         {
 
-                                            var trade = await _repository.GetById<Trade>(change.Id);
+                                            var trade = await _repository.GetById<Trade>(change.EntityId);
 
                                             if (TradeServiceReferential.Rand.Next(1, 10) == 1)
                                             {
                                                 var tradeRejectedEvent = new ComplianceRejectTrade()
                                                 {
-                                                    EntityId = change.Id,
                                                     ComplianceService = _configuration.Id
                                                 };
 
@@ -68,7 +62,6 @@ namespace AzurePlayground.Service
 
                                                 var bookTradeEvent = new BookTrade()
                                                 {
-                                                    EntityId = change.Id,
                                                     ComplianceService = _configuration.Id
                                                 };
 

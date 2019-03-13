@@ -64,7 +64,7 @@ namespace AzurePlayground.Wpf.App
             }
         }
 
-        public Guid Id => _trade.Id;
+        public Guid Id => _trade.EntityId;
         public DateTime Date => _trade.Date;
         public string Marketplace => _trade.Marketplace;
         public string Counterparty => _trade.Counterparty;

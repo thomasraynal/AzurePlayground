@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EventStore.Client.Lite;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,10 +15,9 @@ namespace AzurePlayground.Service.Shared
         public String TradeService { get; set; }
         public String Trader { get; set; }
 
-        public override void Apply(Trade entity)
+        protected override void ApplyInternal(Trade entity)
         {
             entity.Status = Status;
-            entity.Id = EntityId;
             entity.Way = Way;
             entity.Asset = Asset;
             entity.Currency = Currency;

@@ -63,7 +63,7 @@ namespace AzurePlayground.Service.Shared
 
             return new Trade()
             {
-                Id = Guid.NewGuid(),
+                EntityId = Guid.NewGuid(),
                 Date = DateTime.Now,
                 Counterparty = Counterparties.Random(),
                 Asset = asset.Name,

@@ -1,20 +1,21 @@
-﻿using System;
+﻿using EventStore.Client.Lite;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace AzurePlayground.Service.Shared
 {
-    public class Trade : AggregateBase, ITrade
+    public class Trade : AggregateBase<Guid>, ITrade
     {
 
         public Trade()
         {
-            Id = Guid.NewGuid();
+            EntityId = Guid.NewGuid();
         }
 
         public override string ToString()
         {
-            return $"{Id} [{Status}] [{Asset}] [{Way}] [{Currency}] [{Volume}]";
+            return $"{EntityId} [{Status}] [{Asset}] [{Way}] [{Currency}] [{Volume}]";
         }
 
         public override bool Equals(object obj)
@@ -24,10 +25,8 @@ namespace AzurePlayground.Service.Shared
 
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            return EntityId.GetHashCode();
         }
-
-        public Guid Id { get; set; }
 
         public DateTime Date { get; set; }
 
@@ -48,8 +47,6 @@ namespace AzurePlayground.Service.Shared
         public double Volume { get; set; }
 
         public String Trader { get; set; }
-
-        public override object Identifier => Id;
 
         public string MarketService { get; set; }
         public string TradeService { get; set; }

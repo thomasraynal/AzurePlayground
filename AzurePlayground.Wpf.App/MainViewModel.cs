@@ -139,7 +139,7 @@ namespace AzurePlayground.Wpf.App
 
                 var trade = await _tradeService.GetTradeById(tradeEvent.TradeId);
 
-                Notify($"{_token.User.Identity.Name} created trade {trade.Id} on desktop UI");
+                Notify($"{_token.User.Identity.Name} created trade {trade.EntityId} on desktop UI");
 
             });
 
@@ -229,7 +229,7 @@ namespace AzurePlayground.Wpf.App
 
                                 Application.Current.Dispatcher.Invoke(() =>
                                 {
-                                    var trade = Trades.FirstOrDefault(t => t.Id == tradeEvent.Id);
+                                    var trade = Trades.FirstOrDefault(t => t.Id == tradeEvent.EntityId);
 
                                     if (null == trade)
                                     {
@@ -244,7 +244,7 @@ namespace AzurePlayground.Wpf.App
 
                             }
 
-                            this.Notify(MakeEvent("TRADE", _tradeEventService.Current.Endpoint, tradeEvent.Id, tradeEvent.Id));
+                            this.Notify(MakeEvent("TRADE", _tradeEventService.Current.Endpoint, tradeEvent.EntityId, tradeEvent.EntityId));
 
                         });
 

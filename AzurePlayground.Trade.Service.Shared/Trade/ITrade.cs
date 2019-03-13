@@ -9,7 +9,6 @@ namespace AzurePlayground.Service.Shared
     {
         public TradeValidator()
         {
-            RuleFor(request => request.Id).NotEqual(Guid.Empty).NotEmpty().WithMessage("Id should be set");
             RuleFor(request => request.Asset).NotEmpty().WithMessage("Asset should be set");
             RuleFor(request => request.Status).NotEmpty().WithMessage("Status should be set");
             RuleFor(request => request.Way).NotEmpty().WithMessage("Way should be set");
@@ -20,7 +19,7 @@ namespace AzurePlayground.Service.Shared
 
     public interface ITrade
     {
-        Guid Id { get; set; }
+        Guid EntityId { get; set; }
         DateTime Date { get; set; }
         String Marketplace { get; set; }
         String Counterparty { get; set; }

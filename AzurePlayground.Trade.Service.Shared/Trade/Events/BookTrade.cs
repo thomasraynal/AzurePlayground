@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using EventStore.Client.Lite;
 
 namespace AzurePlayground.Service.Shared
 {
@@ -9,7 +10,7 @@ namespace AzurePlayground.Service.Shared
         public string ComplianceService { get; set; }
         public TradeStatus Status => TradeStatus.Booked;
 
-        public override void Apply(Trade entity)
+        protected override void ApplyInternal(Trade entity)
         {
             entity.Status = Status;
             entity.ComplianceService = ComplianceService;

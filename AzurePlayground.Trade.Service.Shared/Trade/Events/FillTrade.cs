@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EventStore.Client.Lite;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,7 +15,7 @@ namespace AzurePlayground.Service.Shared
         public string MarketService { get; set; }
         public DateTime Date{ get; set; }
 
-        public override void Apply(Trade entity)
+        protected override void ApplyInternal(Trade entity)
         {
             entity.Status = Status;
             entity.Marketplace = Marketplace;

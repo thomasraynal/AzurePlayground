@@ -14,10 +14,8 @@ using Microsoft.Extensions.Hosting;
 
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using IdentityServer4.AccessTokenValidation;
-using AzurePlayground.EventStore;
-using AzurePlayground.Events.EventStore;
-using AzurePlayground.EventStore.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
+using EventStore.Client.Lite;
 
 namespace AzurePlayground.Service
 {
@@ -29,7 +27,7 @@ namespace AzurePlayground.Service
             {
                 scanner.AssembliesAndExecutablesFromApplicationBaseDirectory();
                 scanner.WithDefaultConventions();
-                scanner.AddAllTypesOf<IEvent>();
+                scanner.ConnectImplementationsToTypesClosing(typeof(IEvent<>));
                 scanner.ConnectImplementationsToTypesClosing(typeof(IMutable<,>));
                 scanner.ConnectImplementationsToTypesClosing(typeof(ISignalRService<,>));
            });
@@ -50,8 +48,8 @@ namespace AzurePlayground.Service
             services.AddSingleton<ICacheStrategy<ResponseCacheEntry>, DefaultCacheStrategy<ResponseCacheEntry>>();
             services.AddTransient<IAuthorizationHandler, ClaimRequirementHandler>();
 
-            services.AddEventStore<EventStoreRepository>(ServiceConfiguration.EventStore)
-                    .AddEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>, TradeEventCache>();
+            services.AddEventStore<Guid,EventStoreRepository<Guid>>(ServiceConfiguration.EventStore)
+                    .AddEventStoreCache<Guid, Trade>();
 
             services.AddSingleton<IHostedService, MarketService>();
 

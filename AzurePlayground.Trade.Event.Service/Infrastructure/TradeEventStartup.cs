@@ -1,11 +1,9 @@
-﻿using AzurePlayground.Events.EventStore;
-using AzurePlayground.EventStore;
-using AzurePlayground.EventStore.Infrastructure;
-using AzurePlayground.Service.Domain;
+﻿using AzurePlayground.Service.Domain;
 using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite;
 using Dasein.Core.Lite.Hosting;
 using Dasein.Core.Lite.Shared;
+using EventStore.Client.Lite;
 using FluentValidation.AspNetCore;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -31,7 +29,7 @@ namespace AzurePlayground.Service.Infrastructure
                 scanner.WithDefaultConventions();
                 scanner.ConnectImplementationsToTypesClosing(typeof(ISignalRService<,>));
                 scanner.ConnectImplementationsToTypesClosing(typeof(IMutable<,>));
-                scanner.AddAllTypesOf<IEvent>();
+                scanner.ConnectImplementationsToTypesClosing(typeof(IEvent<>));
             });
         }
     }
@@ -53,8 +51,8 @@ namespace AzurePlayground.Service.Infrastructure
             services.AddTransient<IAuthorizationHandler, ClaimRequirementHandler>();
             services.AddSingleton<IMemoryCache, ResponseMemoryCache>();
 
-            services.AddEventStore<EventStoreRepository>(ServiceConfiguration.EventStore)
-                    .AddEventStoreCache<Guid, Trade, MutatedEntitiesDto<Trade>, TradeEventCache>();
+            services.AddEventStore<Guid, EventStoreRepository<Guid>>(ServiceConfiguration.EventStore)
+                    .AddEventStoreCache<Guid, Trade>();
 
             services.AddSingleton<IHostedService, TradeEventListener>();
 

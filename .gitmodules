@@ -2,3 +2,7 @@
 	path = Modules/Dasein.Core.Lite
 	url = https://github.com/thomasraynal/Dasein.Core.Lite.git
 	branch = master
+[submodule "Modules/EventStore.Client.Lite"]
+	path = Modules/EventStore.Client.Lite
+	url = https://github.com/thomasraynal/EventStore.Client.Lite.git
+	branch = master

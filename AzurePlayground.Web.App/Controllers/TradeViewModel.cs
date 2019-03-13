@@ -10,7 +10,7 @@ namespace AzurePlayground.Web.App
     {
         public TradeViewModel(ITrade trade)
         {
-            Id = trade.Id;
+            EntityId = trade.EntityId;
             Date = trade.Date;
             Counterparty = trade.Counterparty;
             Asset = trade.Asset;
@@ -26,7 +26,7 @@ namespace AzurePlayground.Web.App
 
         }
 
-        public Guid Id { get; set; }
+        public Guid EntityId { get; set; }
 
         public DateTime Date { get; set; }
 
