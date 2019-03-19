@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: authentication
 spec:
+  type: NodePort
   ports:
   - name: http
     port: 80
@@ -17,6 +18,7 @@ kind: Service
 metadata:
   name: gateway
 spec:
+  type: NodePort
   ports:
   - name: http
     port: 80
@@ -31,6 +33,7 @@ kind: Service
 metadata:
   name: consul
 spec:
+  type: NodePort
   ports:
   - name: c1
     port: 8500
@@ -43,6 +46,7 @@ kind: Service
 metadata:
   name: eventstore
 spec:
+  type: NodePort
   ports:
   - name: ev1
     port: 2113
@@ -57,6 +61,7 @@ kind: Service
 metadata:
   name: price
 spec:
+  type: NodePort
   ports:
   - name: http
     port: 80
@@ -71,6 +76,7 @@ kind: Service
 metadata:
   name: event
 spec:
+  type: NodePort
   ports:
   - name: http
     port: 80
@@ -85,6 +91,7 @@ kind: Service
 metadata:
   name: trade
 spec:
+  type: NodePort
   ports:
   - name: http
     port: 80
@@ -99,6 +106,7 @@ kind: Service
 metadata:
   name: compliance
 spec:
+  type: NodePort
   ports:
   - name: http
     port: 80
@@ -113,6 +121,7 @@ kind: Service
 metadata:
   name: market
 spec:
+  type: NodePort
   ports:
   - name: http
     port: 80
@@ -121,3 +130,18 @@ spec:
   selector:
     app: azureplayground
     component: market
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 80
+  - name: https
+    port: 443
+  selector:
+    app: azureplayground
+    component: app

@@ -57,12 +57,11 @@ namespace AzurePlayground.Generator
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            var generationDisposable = Observable.Interval(TimeSpan.FromSeconds(1))
+            var generationDisposable = Observable.Interval(TimeSpan.FromSeconds(10))
                                     .Subscribe(async _ =>
                                     {
                                         try
                                         {
-
                                             var requestResult = await _tradeService.CreateTrade(new TradeCreationRequest()
                                             {
                                                 Asset = TradeServiceReferential.Assets.Random().Name,

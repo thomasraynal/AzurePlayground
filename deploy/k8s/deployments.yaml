@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: authentication
-        image: azureplayground.azurecr.io/azureplayground.authentication:v1
+        image: thomasraynal/azureplayground.authentication:v1
         ports:
           - containerPort: 80
           - containerPort: 443
@@ -26,9 +26,9 @@ spec:
              configMapKeyRef:
                name: config
                key: MONGODB_CONNECTION_STRING
-        imagePullPolicy : Never
+        imagePullPolicy : Always
       - name: mongo
-        image: mongo:latest
+        image: mongo
         ports:
           - containerPort: 27017
         env:
@@ -61,7 +61,7 @@ spec:
         ports:
           - containerPort: 80
           - containerPort: 443
-        image: azureplayground.azurecr.io/azureplayground.gateway:v1
+        image: thomasraynal/azureplayground.gateway:v1
         env:
           - name: GlobalConfiguration__ServiceDiscoveryProvider__Host
             value: consul
@@ -69,7 +69,7 @@ spec:
             value: "8500"
           - name: GlobalConfiguration__ServiceDiscoveryProvider__Type
             value: Consul    
-        imagePullPolicy : Never
+        imagePullPolicy : Always
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
@@ -108,7 +108,7 @@ spec:
         ports:
           - containerPort: 80
           - containerPort: 443
-        image: azureplayground.azurecr.io/azureplayground.trade.service:v1
+        image: thomasraynal/azureplayground.trade.service:v1
         env:
           - name: ASPNETCORE_URLS
             value: http://0.0.0.0:80;https://0.0.0.0:443
@@ -123,7 +123,7 @@ spec:
                key: EVENTSTORE_CONNECTION_STRING
           - name: serviceConfiguration__id
             value: trade1
-        imagePullPolicy : Never
+        imagePullPolicy : Always
       initContainers:
       - name: init
         image: busybox
@@ -147,7 +147,7 @@ spec:
         ports:
           - containerPort: 80
           - containerPort: 443
-        image: azureplayground.azurecr.io/azureplayground.market.service:v1
+        image: thomasraynal/azureplayground.market.service:v1
         env:
           - name: ASPNETCORE_URLS
             value: http://0.0.0.0:80;https://0.0.0.0:443
@@ -164,7 +164,7 @@ spec:
                key: EVENTSTORE_CONNECTION_STRING
           - name: serviceConfiguration__id
             value: market1
-        imagePullPolicy : Never
+        imagePullPolicy : Always
       initContainers:
       - name: init
         image: busybox
@@ -188,7 +188,7 @@ spec:
         ports:
           - containerPort: 80
           - containerPort: 443
-        image: azureplayground.azurecr.io/azureplayground.compliance.service:v1
+        image: thomasraynal/azureplayground.compliance.service:v1
         env:
           - name: ASPNETCORE_URLS
             value: http://0.0.0.0:80;https://0.0.0.0:443
@@ -203,7 +203,7 @@ spec:
                key: EVENTSTORE_CONNECTION_STRING
           - name: serviceConfiguration__id
             value: compliance1
-        imagePullPolicy : Never
+        imagePullPolicy : Always
       initContainers:
       - name: init
         image: busybox
@@ -227,7 +227,7 @@ spec:
         ports:
           - containerPort: 80
           - containerPort: 443
-        image: azureplayground.azurecr.io/azureplayground.price.service:v1
+        image: thomasraynal/azureplayground.price.service:v1
         env:
           - name: ASPNETCORE_URLS
             value: http://0.0.0.0:80;https://0.0.0.0:443
@@ -247,7 +247,7 @@ spec:
                key: EVENTSTORE_CONNECTION_STRING
           - name: serviceConfiguration__id
             value: price1
-        imagePullPolicy : Never
+        imagePullPolicy : Always
       initContainers:
       - name: init
         image: busybox
@@ -271,7 +271,7 @@ spec:
         ports:
           - containerPort: 80
           - containerPort: 443
-        image: azureplayground.azurecr.io/azureplayground.trade.event.service:v1
+        image: thomasraynal/azureplayground.trade.event.service:v1
         env:
           - name: ASPNETCORE_URLS
             value: http://0.0.0.0:80;https://0.0.0.0:443
@@ -291,7 +291,7 @@ spec:
                key: EVENTSTORE_CONNECTION_STRING
           - name: serviceConfiguration__id
             value: event1
-        imagePullPolicy : Never
+        imagePullPolicy : Always
       initContainers:
       - name: init
         image: busybox
@@ -331,7 +331,7 @@ spec:
     spec:
       containers:
       - name: generator
-        image: azureplayground.azurecr.io/azureplayground.trade.generator:v1
+        image: thomasraynal/azureplayground.trade.generator:v1
         env:
           - name: ASPNETCORE_URLS
             value: http://0.0.0.0:80;https://0.0.0.0:443
@@ -344,7 +344,35 @@ spec:
              configMapKeyRef:
                name: config
                key: EVENTSTORE_CONNECTION_STRING
-        imagePullPolicy : Never
+        imagePullPolicy : Always
+      initContainers:
+      - name: init
+        image: busybox
+        command: ['sh', '-c', 'sleep 60;']
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: azureplayground
+        component: app
+    spec:
+      containers:
+      - name: app
+        image: thomasraynal/azureplayground.web.app:v1
+        env:
+          - name: ASPNETCORE_URLS
+            value: http://0.0.0.0:80;https://0.0.0.0:443
+          - name: serviceConfiguration__identity
+            value: http://$(AUTHENTICATION_SERVICE_HOST):$(AUTHENTICATION_SERVICE_PORT)
+          - name: serviceConfiguration__gateway
+            value: http://$(GATEWAY_SERVICE_HOST):$(GATEWAY_SERVICE_PORT)   
+        imagePullPolicy : Always
       initContainers:
       - name: init
         image: busybox
