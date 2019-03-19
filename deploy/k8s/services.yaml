@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: authentication
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
   - name: http
     port: 80
@@ -18,7 +18,7 @@ kind: Service
 metadata:
   name: gateway
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
   - name: http
     port: 80
@@ -61,7 +61,7 @@ kind: Service
 metadata:
   name: price
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
   - name: http
     port: 80
@@ -76,7 +76,7 @@ kind: Service
 metadata:
   name: event
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
   - name: http
     port: 80
@@ -130,18 +130,3 @@ spec:
   selector:
     app: azureplayground
     component: market
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: app
-spec:
-  type: NodePort
-  ports:
-  - name: http
-    port: 80
-  - name: https
-    port: 443
-  selector:
-    app: azureplayground
-    component: app

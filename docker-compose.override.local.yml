@@ -12,11 +12,6 @@ services:
       dockerfile: Dockerfile.local
       context: ./AzurePlayground.Gateway
 
-  app:
-    build:
-      dockerfile: Dockerfile.local
-      context: ./AzurePlayground.Web.App
-
   compliance:
     build:
       dockerfile: Dockerfile.local

@@ -94,7 +94,7 @@ namespace AzurePlayground.Service
                                               trade.ApplyEvent(fillTradeEvent);
                                           }
 
-                                          await _repository.SaveAsync(trade);
+                                          await _repository.Save(trade);
 
                                       }
                                       catch (Exception ex)

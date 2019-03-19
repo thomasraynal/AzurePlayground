@@ -23,5 +23,3 @@ timeout 10
 
 start /d "." dotnet run --configuration Debug --no-build --project AzurePlayground.Trade.Generator
 start /d "." dotnet run --configuration Debug --no-build --project AzurePlayground.Web.App
-
-pause

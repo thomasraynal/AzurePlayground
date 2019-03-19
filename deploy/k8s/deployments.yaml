@@ -350,34 +350,6 @@ spec:
         image: busybox
         command: ['sh', '-c', 'sleep 60;']
 ---
-apiVersion: apps/v1beta1
-kind: Deployment
-metadata:
-  name: app
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: azureplayground
-        component: app
-    spec:
-      containers:
-      - name: app
-        image: thomasraynal/azureplayground.web.app:v1
-        env:
-          - name: ASPNETCORE_URLS
-            value: http://0.0.0.0:80;https://0.0.0.0:443
-          - name: serviceConfiguration__identity
-            value: http://$(AUTHENTICATION_SERVICE_HOST):$(AUTHENTICATION_SERVICE_PORT)
-          - name: serviceConfiguration__gateway
-            value: http://$(GATEWAY_SERVICE_HOST):$(GATEWAY_SERVICE_PORT)   
-        imagePullPolicy : Always
-      initContainers:
-      - name: init
-        image: busybox
-        command: ['sh', '-c', 'sleep 60;']
----
 apiVersion: v1
 kind: ConfigMap
 metadata:

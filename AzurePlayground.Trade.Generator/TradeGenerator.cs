@@ -57,7 +57,7 @@ namespace AzurePlayground.Generator
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            var generationDisposable = Observable.Interval(TimeSpan.FromSeconds(10))
+            var generationDisposable = Observable.Interval(TimeSpan.FromSeconds(1))
                                     .Subscribe(async _ =>
                                     {
                                         try

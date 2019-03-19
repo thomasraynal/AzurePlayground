@@ -28,13 +28,13 @@ namespace AzurePlayground.Wpf.App
             {
                 new HubDescriptor()
                 {
-                    Endpoints= new string[]{ "http://localhost:5003/hub/price" },
+                    Endpoints= new string[]{ $"{Gateway}/hub/price" },
                     Name = "PriceHub"
                 },
 
                 new HubDescriptor()
                 {
-                    Endpoints= new string[]{ "http://localhost:5003/hub/trade" },
+                    Endpoints= new string[]{ $"{Gateway}/hub/trade" },
                     Name = "TradeEventHub"
                 }
             };

@@ -1,6 +1,7 @@
 ﻿using AzurePlayground.Service.Shared;
 using AzurePlayground.Wpf.App.Infrastructure;
 using Dasein.Core.Lite.Shared;
+using IdentityModel.Client;
 using IdentityModel.OidcClient;
 using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
@@ -148,6 +149,7 @@ namespace AzurePlayground.Wpf.App
                 Authority =configuration.Identity,
                 ClientId = AzurePlaygroundConstants.Auth.ClientOpenIdNative,
                 Scope = "openid profile desk trade",
+                Policy = new Policy { Discovery = new DiscoveryPolicy { RequireHttps = false } },
                 RedirectUri = "http://127.0.0.1/sample-wpf-app",
                 PostLogoutRedirectUri = "http://127.0.0.1/sample-wpf-app",
                 ResponseMode = OidcClientOptions.AuthorizeResponseMode.FormPost,

@@ -38,7 +38,7 @@ namespace AzurePlayground.Service
 
             trade.ApplyEvent(tradeCreationEvent);
 
-            await _repository.SaveAsync(trade);
+            await _repository.Save(trade);
 
             return new TradeCreationResult()
             {
