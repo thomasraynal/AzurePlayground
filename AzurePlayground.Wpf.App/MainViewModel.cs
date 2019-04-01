@@ -109,7 +109,7 @@ namespace AzurePlayground.Wpf.App
 
             var refitSettings = new RefitSettings()
             {
-                JsonSerializerSettings = AppCore.Instance.Get<JsonSerializerSettings>(),
+                ContentSerializer = new JsonContentSerializer(AppCore.Instance.Get<JsonSerializerSettings>()),
                 HttpMessageHandlerFactory = () => new HttpRetryForeverMessageHandler(5000)
             };
 

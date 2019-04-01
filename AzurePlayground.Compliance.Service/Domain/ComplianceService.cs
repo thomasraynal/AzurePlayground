@@ -12,12 +12,12 @@ namespace AzurePlayground.Service
 {
     public class ComplianceService : IHostedService, ICanLog
     {
-        private readonly IEventStoreCache<Guid, Trade, Trade> _cache;
+        private readonly IEventStoreCache<Guid, Trade> _cache;
         private readonly IEventStoreRepository<Guid> _repository;
         private readonly ComplianceServiceConfiguration _configuration;
         private IDisposable _cleanup;
 
-        public ComplianceService(IEventStoreRepository<Guid> repository, ComplianceServiceConfiguration configuration, IEventStoreCache<Guid, Trade,Trade> cache)
+        public ComplianceService(IEventStoreRepository<Guid> repository, ComplianceServiceConfiguration configuration, IEventStoreCache<Guid, Trade> cache)
         {
             _cache = cache;
             _repository = repository;
@@ -27,21 +27,20 @@ namespace AzurePlayground.Service
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _cleanup = _cache
-                            .GetStream()
-                            .Subscribe(obs =>
+                            .AsObservableCache()
+                            .Connect()
+                            .FilterAndSuppressRemoved(trade => trade.Status == TradeStatus.Filled)
+                            .Subscribe(changes =>
                             {
-                                if (obs.Entities.Count == 0 || obs.IsCacheState) return;
-
-                                var relevantChanges = obs.Entities.Where(trade => trade.Status == TradeStatus.Filled);
-
-                                foreach (var change in relevantChanges)
+                              
+                                foreach (var change in changes)
                                 {
                                     Scheduler.Default.Schedule(async () =>
                                     {
                                         try
                                         {
 
-                                            var trade = await _repository.GetById<Trade>(change.EntityId);
+                                            var trade = await _repository.GetById<Trade>(change.Current.EntityId);
 
                                             if (TradeServiceReferential.Rand.Next(1, 10) == 1)
                                             {
@@ -50,7 +49,8 @@ namespace AzurePlayground.Service
                                                     ComplianceService = _configuration.Id
                                                 };
 
-                                                trade.ApplyEvent(tradeRejectedEvent);
+  
+                                                await _repository.Apply(trade, tradeRejectedEvent);
                                             }
                                             else
                                             {
@@ -65,12 +65,9 @@ namespace AzurePlayground.Service
                                                     ComplianceService = _configuration.Id
                                                 };
 
-                                                trade.ApplyEvent(bookTradeEvent);
+                                                await _repository.Apply(trade, bookTradeEvent);
 
                                             }
-
-                                            await _repository.Save(trade);
-
                                         }
                                         catch (Exception ex)
                                         {

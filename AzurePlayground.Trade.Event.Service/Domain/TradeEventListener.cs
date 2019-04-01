@@ -2,6 +2,7 @@
 using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite;
 using Dasein.Core.Lite.Shared;
+using DynamicData;
 using EventStore.Client.Lite;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -14,11 +15,11 @@ namespace AzurePlayground.Service.Domain
     public class TradeEventListener : IHostedService
     {
 
-        private IEventStoreCache<Guid, Trade,Trade> _cache;
+        private IEventStoreCache<Guid, Trade> _cache;
         private IDisposable _cleanup;
         private ISignalRService<Trade, TradeEventRequest> _tradeEventHubService;
 
-        public TradeEventListener(TradeEventServiceConfiguration configuration, IEventStoreCache<Guid, Trade, Trade> cache)
+        public TradeEventListener(TradeEventServiceConfiguration configuration, IEventStoreCache<Guid, Trade> cache)
         {
             _cache = cache;
 
@@ -47,10 +48,12 @@ namespace AzurePlayground.Service.Domain
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _cleanup = _cache
-                        .GetStream()
-                        .Subscribe(async obs =>
+                        .AsObservableCache()
+                        .Connect()
+                        .WhereReasonsAreNot(ChangeReason.Remove)
+                        .Subscribe(async changes =>
                         {
-                            foreach (var trade in obs.Entities)
+                            foreach (var trade in changes)
                             {
                                 await _tradeEventHubService.Current.Proxy.RaiseChange(trade);
                             }

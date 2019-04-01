@@ -12,9 +12,9 @@ namespace AzurePlayground.Service
     {
         private IEventStoreRepository<Guid> _repository;
         private TradeServiceConfiguration _configuration;
-        private IEventStoreCache<Guid, Trade, Trade> _cache;
+        private IEventStoreCache<Guid, Trade> _cache;
         
-        public TradeService(IEventStoreRepository<Guid> repository, TradeServiceConfiguration configuration, IEventStoreCache<Guid, Trade, Trade> cache)
+        public TradeService(IEventStoreRepository<Guid> repository, TradeServiceConfiguration configuration, IEventStoreCache<Guid, Trade> cache)
         {
             _repository = repository;
             _configuration = configuration;
@@ -36,9 +36,7 @@ namespace AzurePlayground.Service
                 Trader = request.Trader
             };
 
-            trade.ApplyEvent(tradeCreationEvent);
-
-            await _repository.Save(trade);
+            await _repository.Apply(trade, tradeCreationEvent);
 
             return new TradeCreationResult()
             {
@@ -49,7 +47,7 @@ namespace AzurePlayground.Service
 
         public Task<IEnumerable<ITrade>> GetAllTrades()
         {
-            return Task.FromResult(_cache.CacheState.State.Select(trade => trade.Value).Cast<ITrade>());
+            return Task.FromResult(_cache.AsObservableCache().Items.Select(trade => trade).Cast<ITrade>());
         }
 
         public async Task<ITrade> GetTradeById(Guid tradeId)

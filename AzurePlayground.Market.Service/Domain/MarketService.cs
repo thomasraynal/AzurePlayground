@@ -14,13 +14,13 @@ namespace AzurePlayground.Service
 {
     public class MarketService : ICanLog, IHostedService
     {
-        private readonly IEventStoreCache<Guid, Trade,Trade> _cache;
+        private readonly IEventStoreCache<Guid, Trade> _cache;
         private readonly IEventStoreRepository<Guid> _repository;
         private readonly MarketServiceConfiguration _configuration;
         private IDisposable _cleanup;
         private IPriceService _priceService;
 
-        public MarketService(IEventStoreRepository<Guid> repository, MarketServiceConfiguration configuration, IEventStoreCache<Guid, Trade, Trade> cache)
+        public MarketService(IEventStoreRepository<Guid> repository, MarketServiceConfiguration configuration, IEventStoreCache<Guid, Trade> cache)
         {
             _cache = cache;
             _repository = repository;
@@ -30,7 +30,7 @@ namespace AzurePlayground.Service
 
             var refitSettings = new RefitSettings()
             {
-                JsonSerializerSettings = settings,
+                ContentSerializer = new JsonContentSerializer(settings),
                 HttpMessageHandlerFactory = () => new HttpRetryForeverMessageHandler(5000)
             };
 
@@ -42,20 +42,19 @@ namespace AzurePlayground.Service
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _cleanup = _cache
-                          .GetStream()
-                          .Subscribe(obs =>
+                          .AsObservableCache()
+                          .Connect()
+                          .FilterAndSuppressRemoved(trade=> trade.Status == TradeStatus.Created)
+                          .Subscribe(changes =>
                           {
-                              if (obs.Entities.Count == 0 || obs.IsCacheState) return;
 
-                              var relevantChanges = obs.Entities.Where(trade => trade.Status == TradeStatus.Created);
-
-                              foreach (var change in relevantChanges)   
+                              foreach (var change in changes)   
                               {
                                   Scheduler.Default.Schedule(async () =>
                                   {
                                       try
                                       {
-                                          var trade = await _repository.GetById<Trade>(change.EntityId);
+                                          var trade = await _repository.GetById<Trade>(change.Current.EntityId);
 
                                           if (TradeServiceReferential.Rand.Next(1, 10) == 1)
                                           {
@@ -64,14 +63,15 @@ namespace AzurePlayground.Service
                                                   MarketService = _configuration.Id,
                                               };
 
-                                              trade.ApplyEvent(tradeRejectedEvent);
+                                              await _repository.Apply(trade, tradeRejectedEvent);
+
                                           }
                                           else
                                           {
 
                                               var counterparty = TradeServiceReferential.Counterparties.Random();
 
-                                              var price = await _priceService.GetPrice(change.Asset);
+                                              var price = await _priceService.GetPrice(change.Current.Asset);
 
                                               if (counterparty == TradeServiceReferential.HighLatencyCounterparty)
                                               {
@@ -91,10 +91,11 @@ namespace AzurePlayground.Service
                                                   Marketplace = TradeServiceReferential.Markets.Random().Name,
                                               };
 
-                                              trade.ApplyEvent(fillTradeEvent);
+
+                                              await _repository.Apply(trade, fillTradeEvent);
+                         
                                           }
 
-                                          await _repository.Save(trade);
 
                                       }
                                       catch (Exception ex)

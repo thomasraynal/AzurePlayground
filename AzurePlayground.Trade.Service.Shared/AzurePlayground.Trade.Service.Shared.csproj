@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Modules\Dasein.Core.Lite\Dasein.Core.Lite.Shared\Dasein.Core.Lite.Shared.csproj" />
-    <ProjectReference Include="..\Modules\EventStore.Client.Lite\EventStore.Client.Lite.Shared\EventStore.Client.Lite.Shared.csproj" />
+    <ProjectReference Include="..\Modules\EventStore.Client.Lite\EventStore.Client.Lite\EventStore.Client.Lite.csproj" />
   </ItemGroup>
 
 </Project>

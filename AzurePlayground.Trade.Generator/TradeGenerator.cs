@@ -1,5 +1,6 @@
 ﻿using AzurePlayground.Service.Shared;
 using Dasein.Core.Lite.Shared;
+using DynamicData;
 using EventStore.Client.Lite;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
@@ -17,12 +18,12 @@ namespace AzurePlayground.Generator
     {
         private ITradeService _tradeService;
         private TradeGeneratorConfiguration _configuration;
-        private IEventStoreCache<Guid, Trade, Trade> _cache;
+        private IEventStoreCache<Guid, Trade> _cache;
         private IEventStoreRepository<Guid> _repository;
         private JwtSecurityTokenHandler _jwthandler;
         private CompositeDisposable _cleanup;
 
-        public TradeGenerator(TradeGeneratorConfiguration configuration, IEventStoreRepository<Guid> repository, IEventStoreCache<Guid, Trade, Trade> cache)
+        public TradeGenerator(TradeGeneratorConfiguration configuration, IEventStoreRepository<Guid> repository, IEventStoreCache<Guid, Trade> cache)
         {
             _configuration = configuration;
 
@@ -35,7 +36,7 @@ namespace AzurePlayground.Generator
             
             var refitSettings = new RefitSettings()
             {
-                JsonSerializerSettings = settings,
+                ContentSerializer = new JsonContentSerializer(settings),
                 HttpMessageHandlerFactory = () => new HttpRetryForeverMessageHandler(5000)
             };
 
@@ -81,15 +82,14 @@ namespace AzurePlayground.Generator
 
 
             var observerDisposable = _cache
-                                .GetStream()
-                                .Subscribe(obs =>
+                                .AsObservableCache()
+                                .Connect()
+                                .WhereReasonsAreNot(ChangeReason.Remove)
+                                .Subscribe(changes =>
                                 {
-
-                                    if (obs.IsCacheState) return;
-
-                                    foreach (var trade in obs.Entities)
+                                    foreach (var change in changes)
                                     {
-                                        this.LogInformation($"Handle trade {trade}");
+                                        this.LogInformation($"Handle trade {change.Current}");
                                     }
 
                                 });
